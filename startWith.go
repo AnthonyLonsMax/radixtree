@@ -1,11 +1,11 @@
 package radixtree
 
-// Contains returns true if the word exists in the tree.
-func (r *RadixTree) Contains(word string) bool {
-	return r.contains(r.root, word)
+// StartsWith returns true if any word in the tree has the given prefix.
+func (r *RadixTree) StartsWith(word string) bool {
+	return r.startWith(r.root, word)
 }
 
-func (r *RadixTree) contains(nodeCursor *node, word string) bool {
+func (r *RadixTree) startWith(nodeCursor *node, word string) bool {
 	if nodeCursor == nil {
 		return false
 	}
@@ -17,7 +17,7 @@ func (r *RadixTree) contains(nodeCursor *node, word string) bool {
 	}
 
 	if commonLen == len(word) {
-		return nodeCursor.isTerminal
+		return true
 	}
 
 	if _, ok := nodeCursor.children[word[commonLen]]; ok {

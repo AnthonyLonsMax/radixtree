@@ -37,16 +37,6 @@ func (r *RadixTree) String() string {
 	panic("unimplemented")
 }
 
-// MarshalText implements encoding.TextMarshaler.
-func (r *RadixTree) MarshalText() ([]byte, error) {
-	panic("unimplemented")
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (r *RadixTree) UnmarshalText(_ []byte) error {
-	panic("unimplemented")
-}
-
 func commonPrefixLength(word1, word2 string) int {
 	minLength := min(len(word1), len(word2))
 	count := 0
