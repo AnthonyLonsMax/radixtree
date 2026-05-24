@@ -21,7 +21,7 @@ func (r *RadixTree) startWith(nodeCursor *node, word string) bool {
 	}
 
 	if _, ok := nodeCursor.children[word[commonLen]]; ok {
-		return r.contains(nodeCursor.children[word[commonLen]], word[commonLen:])
+		return r.startWith(nodeCursor.children[word[commonLen]], word[commonLen:])
 	}
 
 	return false

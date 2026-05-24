@@ -24,11 +24,13 @@ func newNode(prefix string, isTerminal bool) *node {
 
 // RadixTree represents a radix tree data structure.
 type RadixTree struct {
+	size int64
 	root *node
 }
 
 // Add inserts a word into the radix tree.
 func (r *RadixTree) Add(word string) {
+	r.size++
 	r.root = r.add(r.root, word)
 }
 
@@ -52,16 +54,6 @@ func commonPrefixLength(word1, word2 string) int {
 	return count
 }
 
-// Delete removes a word from the tree. Returns true if the word was found and deleted.
-func (r *RadixTree) Delete(_ string) bool {
-	panic("unimplemented")
-}
-
-// StartsWith returns true if any word in the tree has the given prefix.
-func (r *RadixTree) StartsWith(_ string) bool {
-	panic("unimplemented")
-}
-
 // CommonPrefix returns the longest common prefix among all stored words.
 func (r *RadixTree) CommonPrefix() string {
 	panic("unimplemented")
@@ -79,7 +71,8 @@ func (r *RadixTree) Size() int {
 
 // Clear removes all words from the tree.
 func (r *RadixTree) Clear() {
-	panic("unimplemented")
+	r.root = nil
+	r.size = 0
 }
 
 // ForEach calls fn for each word in the tree. If fn returns false, iteration stops.
