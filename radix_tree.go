@@ -34,11 +34,6 @@ func (r *RadixTree) Add(word string) {
 	r.root = r.add(r.root, word)
 }
 
-// String returns a string representation of the tree.
-func (r *RadixTree) String() string {
-	panic("unimplemented")
-}
-
 func commonPrefixLength(word1, word2 string) int {
 	minLength := min(len(word1), len(word2))
 	count := 0
@@ -54,35 +49,10 @@ func commonPrefixLength(word1, word2 string) int {
 	return count
 }
 
-// CommonPrefix returns the longest common prefix among all stored words.
-func (r *RadixTree) CommonPrefix() string {
-	panic("unimplemented")
-}
-
-// Keys returns all stored words in the tree.
-func (r *RadixTree) Keys() []string {
-	panic("unimplemented")
-}
-
-// Size returns the number of words stored in the tree.
-func (r *RadixTree) Size() int {
-	panic("unimplemented")
-}
-
 // Clear removes all words from the tree.
 func (r *RadixTree) Clear() {
 	r.root = nil
 	r.size = 0
-}
-
-// ForEach calls fn for each word in the tree. If fn returns false, iteration stops.
-func (r *RadixTree) ForEach(_ func(key string) bool) {
-	panic("unimplemented")
-}
-
-// LongestPrefixOf returns the longest key that is a prefix of the given word.
-func (r *RadixTree) LongestPrefixOf(_ string) string {
-	panic("unimplemented")
 }
 
 // PrintDebug prints the DFS traversal of the tree prefixes with level indentation.
