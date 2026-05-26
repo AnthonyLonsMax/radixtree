@@ -66,8 +66,14 @@ func (r *RadixTree) PrintDebug() {
 }
 
 func (r *RadixTree) dfsPrint(n *node, level int) {
+	fn := func(terminal bool) string {
+		if terminal {
+			return "W"
+		}
+		return "N"
+	}
 	indent := strings.Repeat(" ", level)
-	fmt.Printf("%s%s %v\n", indent, n.prefix, n.isTerminal)
+	fmt.Printf("%s%s %v\n", indent, n.prefix, fn(n.isTerminal))
 
 	for _, node := range n.children {
 		r.dfsPrint(node, level+1)
