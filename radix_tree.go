@@ -30,7 +30,10 @@ type RadixTree struct {
 
 // Add inserts a word into the radix tree.
 func (r *RadixTree) Add(word string) {
-	r.root = r.add(r.root, word)
+	if !r.Contains(word) {
+		r.root = r.add(r.root, word)
+		r.size++
+	}
 }
 
 func commonPrefixLength(word1, word2 string) int {
