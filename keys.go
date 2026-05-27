@@ -1,10 +1,10 @@
 package radixtree
 
 // Keys returns all stored words in the tree.
-func (r *RadixTree) Keys() *[]string {
+func (r *RadixTree) Keys() []string {
 	result := make([]string, 0)
 	r.keys(r.root, "", &result)
-	return &result
+	return result
 }
 
 func (r *RadixTree) keys(cursor *node, currentWord string, words *[]string) {

@@ -23,7 +23,7 @@ func TestClear(t *testing.T) {
 	if tree.Contains("hello") {
 		t.Fatal("Tree should not contain hello after Clear")
 	}
-	if tree.Keys() != nil && len(*tree.Keys()) != 0 {
+	if len(tree.Keys()) != 0 {
 		t.Fatal("Keys should be empty after Clear")
 	}
 }
@@ -84,7 +84,7 @@ func TestAddDeleteRoundtrip(t *testing.T) {
 	if tree.Size() != 0 {
 		t.Fatalf("Expected size 0, got %d", tree.Size())
 	}
-	if tree.Keys() != nil && len(*tree.Keys()) != 0 {
+	if len(tree.Keys()) != 0 {
 		t.Fatal("Keys should be empty after deleting all")
 	}
 }
@@ -141,7 +141,7 @@ func TestRandomOperations(t *testing.T) {
 		}
 	}
 
-	keys := *tree.Keys()
+	keys := tree.Keys()
 	if len(keys) != int(tree.Size()) {
 		t.Fatalf("Keys length %d != size %d", len(keys), tree.Size())
 	}
@@ -173,7 +173,7 @@ func TestKeysEmptyTree(t *testing.T) {
 
 	tree := radixtree.RadixTree{}
 	keys := tree.Keys()
-	if keys == nil || len(*keys) != 0 {
+	if len(keys) != 0 {
 		t.Fatal("Keys of empty tree should be empty slice")
 	}
 }
@@ -254,7 +254,7 @@ func TestUnicodeWords(t *testing.T) {
 		t.Fatalf("Expected size %d, got %d", len(words), tree.Size())
 	}
 
-	keys := *tree.Keys()
+	keys := tree.Keys()
 	if len(keys) != len(words) {
 		t.Fatalf("Expected %d keys, got %d", len(words), len(keys))
 	}

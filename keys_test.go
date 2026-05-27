@@ -40,7 +40,7 @@ func TestReadAllTheKeys(t *testing.T) {
 			for _, e := range test.source {
 				tree.Add(e)
 			}
-			keys := *tree.Keys()
+			keys := tree.Keys()
 			slices.Sort(keys)
 
 			for _, e := range test.source {
