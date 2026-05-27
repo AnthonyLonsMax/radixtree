@@ -2,6 +2,32 @@ package radixtree
 
 import "maps"
 
+// Add inserts a word into the radix tree. Returns true if the word was newly added.
+func (r *RadixTree) Add(word string) bool {
+	if word == "" {
+		if r.root == nil {
+			r.root = newNode("", true)
+			r.size++
+			return true
+		}
+		if r.root.prefix != "" {
+			r.nodeSplit(r.root, 0)
+		}
+		if !r.root.isTerminal {
+			r.root.isTerminal = true
+			r.size++
+			return true
+		}
+		return false
+	}
+	node, added := r.add(r.root, word)
+	r.root = node
+	if added {
+		r.size++
+	}
+	return added
+}
+
 func (r *RadixTree) nodeSplit(current *node, pos int) *node {
 	child := newNode(current.prefix[pos:], current.isTerminal)
 
@@ -16,59 +42,61 @@ func (r *RadixTree) nodeSplit(current *node, pos int) *node {
 	return child
 }
 
-func (r *RadixTree) add(cursor *node, word string) *node {
+func (r *RadixTree) add(cursor *node, word string) (*node, bool) {
 	if cursor == nil {
-		return newNode(word, true)
+		return newNode(word, true), true
 	}
 
 	commonLen := commonPrefixLength(cursor.prefix, word)
+	var added bool
 
 	switch {
 	case commonLen == 0:
 		if cursor.prefix != "" {
 			r.nodeSplit(cursor, 0)
 		}
-		if _, ok := cursor.children[word[commonLen]]; ok {
-			cursor.children[word[commonLen]] = r.add(cursor.children[word[commonLen]], word[commonLen:])
+		if child, ok := cursor.children[word[commonLen]]; ok {
+			cursor.children[word[commonLen]], added = r.add(child, word[commonLen:])
 		} else {
 			cursor.children[word[commonLen]] = newNode(word[commonLen:], true)
+			added = true
 		}
 
-	// Avoid duplicates
 	case commonLen == len(cursor.prefix) && commonLen == len(word):
+		added = !cursor.isTerminal
 		cursor.isTerminal = true
 
 	case commonLen == len(cursor.prefix) && commonLen < len(word):
-		if _, ok := cursor.children[word[commonLen]]; ok {
-			cursor.children[word[commonLen]] = r.add(cursor.children[word[commonLen]], word[commonLen:])
+		if child, ok := cursor.children[word[commonLen]]; ok {
+			cursor.children[word[commonLen]], added = r.add(child, word[commonLen:])
 		} else {
 			cursor.children[word[commonLen]] = newNode(word[commonLen:], true)
+			added = true
 		}
 
 	case commonLen == len(word) && commonLen < len(cursor.prefix):
 		r.nodeSplit(cursor, commonLen)
+		added = true
 		cursor.isTerminal = true
 
 	default:
 		r.nodeSplit(cursor, commonLen)
 
-		if _, ok := cursor.children[word[commonLen]]; ok {
-			cursor.children[word[commonLen]] = r.add(cursor.children[word[commonLen]], word[commonLen:])
+		if child, ok := cursor.children[word[commonLen]]; ok {
+			cursor.children[word[commonLen]], added = r.add(child, word[commonLen:])
 		} else {
 			cursor.children[word[commonLen]] = newNode(word[commonLen:], true)
+			added = true
 		}
-
 	}
 
-	// If there is one child and it's no terminal -> merge it
 	if !cursor.isTerminal && len(cursor.children) == 1 {
-		cursor.prefix += cursor.children[0].prefix
-		children := cursor.children[0].children
-		terminal := cursor.children[0].isTerminal
-		cursor.children = make(map[byte]*node)
-		maps.Copy(cursor.children, children)
-		cursor.isTerminal = terminal
+		for _, child := range cursor.children {
+			cursor.prefix += child.prefix
+			cursor.children = child.children
+			cursor.isTerminal = child.isTerminal
+		}
 	}
 
-	return cursor
+	return cursor, added
 }
