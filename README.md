@@ -113,6 +113,14 @@ Keys are treated as raw byte sequences. Any valid Go string is accepted, includi
 arbitrary binary data and multi-byte UTF-8. Comparisons are lexicographic by byte
 value — "café" and "cafè" are distinct keys.
 
+### Iterative traversal (no recursion limit)
+
+`ForEach`, `Keys`, and `Remaining` use an **iterative DFS** with an explicit stack
+instead of recursion. This means trees with thousands of nested levels won't cause
+a stack overflow. The shared `[]byte` buffer with save/truncate avoids O(n²) string
+allocations — each node appends its prefix to the buffer and truncates after its
+subtree is processed, reusing the underlying array across the entire traversal.
+
 ## Benchmarks
 
 ```
