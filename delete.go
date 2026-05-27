@@ -19,37 +19,33 @@ func (r *RadixTree) delete(nodeCursor *node, word string) (*node, bool) {
 
 	commonLen := commonPrefixLength(nodeCursor.prefix, word)
 
-	if commonLen == 0 && nodeCursor.prefix != "" {
+	switch {
+	case commonLen == 0 && nodeCursor.prefix != "":
 		return nodeCursor, false
-	}
 
-	if commonLen == len(word) {
-		if nodeCursor.isTerminal {
-			nodeCursor.isTerminal = false
-			if len(nodeCursor.children) == 0 {
-				return nil, true
-			}
-			if len(nodeCursor.children) == 1 {
-				// Merge with it's childrens
-				for k, v := range nodeCursor.children {
-					if v.isTerminal == false {
-						nodeCursor.prefix += v.prefix
-						delete(nodeCursor.children, k)
-						maps.Copy(nodeCursor.children, v.children)
-						nodeCursor.isTerminal = v.isTerminal
-					}
+	case commonLen == len(word) && nodeCursor.isTerminal:
+		nodeCursor.isTerminal = false
+		if len(nodeCursor.children) == 0 {
+			return nil, true
+		}
+		if len(nodeCursor.children) == 1 {
+			// Merge with it's childrens
+			for k, v := range nodeCursor.children {
+				if v.isTerminal == false {
+					nodeCursor.prefix += v.prefix
+					delete(nodeCursor.children, k)
+					maps.Copy(nodeCursor.children, v.children)
+					nodeCursor.isTerminal = v.isTerminal
 				}
 			}
-			return nodeCursor, true
+		}
+		return nodeCursor, true
+	default:
+		if _, ok := nodeCursor.children[word[commonLen]]; ok {
+			node, ok := r.delete(nodeCursor.children[word[commonLen]], word[commonLen:])
+			nodeCursor.children[word[commonLen]] = node
+			return nodeCursor, ok
 		}
 		return nodeCursor, false
 	}
-
-	if _, ok := nodeCursor.children[word[commonLen]]; ok {
-		node, ok := r.delete(nodeCursor.children[word[commonLen]], word[commonLen:])
-		nodeCursor.children[word[commonLen]] = node
-		return nodeCursor, ok
-	}
-
-	return nodeCursor, false
 }

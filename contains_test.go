@@ -7,24 +7,37 @@ import (
 )
 
 func TestContains(t *testing.T) {
-
 	t.Parallel()
 
-	var tree radixtree.RadixTree
-	tree.Add("worderland")
-	tree.Add("word")
-	tree.Add("worddy")
-	tree.Add("work")
-	tree.Add("worry")
-	tree.Add("worries")
-	tree.Add("wallet")
-	tree.Add("love")
-	tree.Add("lonnly")
-	tree.Add("lovers")
-	tree.Add("anthony")
-	tree.Add("anth")
+	type testCase struct {
+		source     []string
+		search     string
+		shouldFind bool
+	}
 
-	if !tree.Contains("wallet") {
-		t.Fatal("tree element should be in the tree")
+	tc := []testCase{
+		{source: []string{}, search: "a", shouldFind: false},
+		{source: []string{"hello", "world"}, search: "hello", shouldFind: true},
+		{source: []string{"hello", "world"}, search: "world", shouldFind: true},
+		{source: []string{"hello", "world"}, search: "xyz", shouldFind: false},
+		{source: []string{"hello", "world"}, search: "hell", shouldFind: false},
+		{source: []string{"hell", "hello"}, search: "hell", shouldFind: true},
+		{source: []string{""}, search: "", shouldFind: true},
+		{source: []string{"test"}, search: "", shouldFind: false},
+		{source: []string{"a", "ab", "abc"}, search: "ab", shouldFind: true},
+	}
+
+	for _, test := range tc {
+		var tree radixtree.RadixTree
+		for _, e := range test.source {
+			tree.Add(e)
+		}
+		if tree.Contains(test.search) != test.shouldFind {
+			if test.shouldFind {
+				t.Fatalf("Word %q should be in the tree", test.search)
+			} else {
+				t.Fatalf("Word %q should not be in the tree", test.search)
+			}
+		}
 	}
 }
