@@ -8,18 +8,20 @@ func (r *RadixTree) Remaining(prefix string) []string {
 		return result
 	}
 
+	buf := make([]byte, 0, initialBufferSize)
+
 	if prefix == "" {
-		r.keys(r.root, "", &result)
+		r.keys(r.root, &buf, &result)
 
 		return result
 	}
 
-	r.remaining(r.root, prefix, "", &result)
+	r.remaining(r.root, prefix, &buf, &result)
 
 	return result
 }
 
-func (r *RadixTree) remaining(cursor *node, word, acc string, words *[]string) {
+func (r *RadixTree) remaining(cursor *node, word string, buf *[]byte, words *[]string) {
 	if cursor == nil {
 		return
 	}
@@ -31,7 +33,7 @@ func (r *RadixTree) remaining(cursor *node, word, acc string, words *[]string) {
 	}
 
 	if commonLen == len(word) {
-		r.keys(cursor, acc, words)
+		r.keys(cursor, buf, words)
 
 		return
 	}
@@ -41,6 +43,12 @@ func (r *RadixTree) remaining(cursor *node, word, acc string, words *[]string) {
 	}
 
 	if child, ok := cursor.children[word[commonLen]]; ok {
-		r.remaining(child, word[commonLen:], acc+cursor.prefix, words)
+		startLen := len(*buf)
+
+		*buf = append(*buf, cursor.prefix...)
+
+		r.remaining(child, word[commonLen:], buf, words)
+
+		*buf = (*buf)[:startLen]
 	}
 }
