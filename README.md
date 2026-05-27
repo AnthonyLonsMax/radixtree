@@ -70,6 +70,49 @@ tree.ForEach(func(key string) {
 | `Remaining(prefix string) []string` | Returns all words that start with the given prefix. |
 | `Clear()` | Removes all words from the tree. |
 
+## Considerations
+
+### Thread safety
+
+This library is **not thread-safe**. Concurrent reads and writes from multiple goroutines
+without external synchronization will cause a data race. If you need concurrent access,
+protect the tree with a `sync.RWMutex` or use a dedicated concurrent data structure.
+
+### Set semantics
+
+The tree tracks word *presence* only — it has no key-value storage. Use it when you
+need to know *whether* a word exists, not when you need to associate data with it.
+
+### When to use a radix tree vs a `map[string]bool`
+
+| Use case | Recommended |
+|---|---|
+| Fast exact lookup, no prefix ops | `map[string]bool` |
+| Prefix matching / autocomplete | Radix tree |
+| Longest common prefix | Radix tree |
+| Lexicographic ordering | Radix tree |
+| Simplicity | `map[string]bool` |
+
+### Compared to other radix tree libraries
+
+- **hashicorp/go-immutable-radix**: Immutable, concurrent-safe via copy-on-write,
+  supports key-value storage, but has external dependencies and higher allocation
+  overhead per write.
+- **This library**: Simple mutable API, zero dependencies, minimal allocation
+  overhead, set-only semantics. Best when you need a lightweight prefix tree.
+
+### Memory
+
+Each node carries a `map[byte]*node` for children, so per-node overhead is higher
+than a raw trie, but fewer nodes exist due to prefix compression. The tree is
+optimized for string keys of moderate length.
+
+### Character encoding
+
+Keys are treated as raw byte sequences. Any valid Go string is accepted, including
+arbitrary binary data and multi-byte UTF-8. Comparisons are lexicographic by byte
+value — "café" and "cafè" are distinct keys.
+
 ## Benchmarks
 
 ```
