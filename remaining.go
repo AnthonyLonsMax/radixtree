@@ -11,44 +11,44 @@ func (r *RadixTree) Remaining(prefix string) []string {
 	buf := make([]byte, 0, initialBufferSize)
 
 	if prefix == "" {
-		r.keys(r.root, &buf, &result)
+		walk(r.root, &buf, func(s string) {
+			result = append(result, s)
+		})
 
 		return result
 	}
 
-	r.remaining(r.root, prefix, &buf, &result)
+	cursor := r.root
+	remaining := prefix
 
-	return result
-}
+	for {
+		commonLen := commonPrefixLength(cursor.prefix, remaining)
 
-func (r *RadixTree) remaining(cursor *node, word string, buf *[]byte, words *[]string) {
-	if cursor == nil {
-		return
-	}
+		if commonLen == 0 && cursor.prefix != "" {
+			return result
+		}
 
-	commonLen := commonPrefixLength(cursor.prefix, word)
+		if commonLen == len(remaining) {
+			walk(cursor, &buf, func(s string) {
+				result = append(result, s)
+			})
 
-	if commonLen == 0 && cursor.prefix != "" {
-		return
-	}
+			return result
+		}
 
-	if commonLen == len(word) {
-		r.keys(cursor, buf, words)
+		if commonLen < len(cursor.prefix) {
+			return result
+		}
 
-		return
-	}
+		buf = append(buf, cursor.prefix...)
 
-	if commonLen < len(cursor.prefix) {
-		return
-	}
+		child, ok := cursor.children[remaining[commonLen]]
 
-	if child, ok := cursor.children[word[commonLen]]; ok {
-		startLen := len(*buf)
+		if !ok {
+			return result
+		}
 
-		*buf = append(*buf, cursor.prefix...)
-
-		r.remaining(child, word[commonLen:], buf, words)
-
-		*buf = (*buf)[:startLen]
+		cursor = child
+		remaining = remaining[commonLen:]
 	}
 }
