@@ -11,52 +11,43 @@ func TestReadAllTheKeys(t *testing.T) {
 	t.Parallel()
 
 	type testCase struct {
-		source         []string
-		shouldContains []string
+		name   string
+		source []string
 	}
 
 	tc := []testCase{
 		{
-			source: []string{
-				"worderland",
-				"word",
-				"worddy",
-				"work",
-				"worry",
-				"wor",
-				"worries",
-				"wallet",
-				"love",
-				"lonnly",
-				"lovers",
-				"anthony",
-				"ony",
-				"anth",
-			},
+			name:   "multiple words with common prefixes",
+			source: []string{"worderland", "word", "worddy", "work", "worry", "wor", "worries", "wallet", "love", "lonnly", "lovers", "anthony", "ony", "anth"},
 		},
 		{
+			name:   "empty tree",
 			source: []string{},
 		},
 		{
+			name:   "single word",
 			source: []string{"single"},
 		},
 		{
+			name:   "single characters",
 			source: []string{"a", "b", "c"},
 		},
 	}
 
 	for _, test := range tc {
-		var tree radixtree.RadixTree
-		for _, e := range test.source {
-			tree.Add(e)
-		}
-		keys := *tree.Keys()
-		slices.Sort(keys)
-
-		for _, e := range test.source {
-			if _, ok := slices.BinarySearch(keys, e); !ok {
-				t.Fatalf("Word %s should be in the keys slice", e)
+		t.Run(test.name, func(t *testing.T) {
+			var tree radixtree.RadixTree
+			for _, e := range test.source {
+				tree.Add(e)
 			}
-		}
+			keys := *tree.Keys()
+			slices.Sort(keys)
+
+			for _, e := range test.source {
+				if _, ok := slices.BinarySearch(keys, e); !ok {
+					t.Fatalf("Word %s should be in the keys slice", e)
+				}
+			}
+		})
 	}
 }

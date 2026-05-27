@@ -30,7 +30,6 @@ type RadixTree struct {
 
 // Add inserts a word into the radix tree.
 func (r *RadixTree) Add(word string) {
-	r.size++
 	r.root = r.add(r.root, word)
 }
 

@@ -36,7 +36,6 @@ func (r *RadixTree) add(cursor *node, word string) *node {
 
 	// Avoid duplicates
 	case commonLen == len(cursor.prefix) && commonLen == len(word):
-		r.size--
 		cursor.isTerminal = true
 
 	case commonLen == len(cursor.prefix) && commonLen < len(word):

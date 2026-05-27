@@ -17,7 +17,10 @@ func (r *RadixTree) contains(nodeCursor *node, word string) bool {
 	}
 
 	if commonLen == len(word) {
-		return nodeCursor.isTerminal
+		if commonLen == len(nodeCursor.prefix) {
+			return nodeCursor.isTerminal
+		}
+		return false
 	}
 
 	if _, ok := nodeCursor.children[word[commonLen]]; ok {
