@@ -1,6 +1,8 @@
 package radixtree
 
-import "maps"
+import (
+	"maps"
+)
 
 // Delete removes a word from the tree. Returns true if the word was found and deleted.
 func (r *RadixTree) Delete(word string) bool {
@@ -43,7 +45,11 @@ func (r *RadixTree) delete(nodeCursor *node, word string) (*node, bool) {
 	default:
 		if _, ok := nodeCursor.children[word[commonLen]]; ok {
 			node, ok := r.delete(nodeCursor.children[word[commonLen]], word[commonLen:])
-			nodeCursor.children[word[commonLen]] = node
+			if node != nil {
+				nodeCursor.children[word[commonLen]] = node
+			} else {
+				delete(nodeCursor.children, word[commonLen])
+			}
 			return nodeCursor, ok
 		}
 		return nodeCursor, false
