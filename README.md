@@ -7,6 +7,8 @@ A radix tree (compressed prefix tree) implementation in Go. Zero external depend
 - Insert, delete, and search words in O(k) time (k = key length)
 - Longest prefix matching
 - Prefix existence checks (StartsWith)
+- Autocomplete / prefix-based word retrieval (Remaining)
+- Minimum / Maximum lexicographic word retrieval
 - Common prefix computation across all stored words
 - Iteration over all keys (ForEach, Keys)
 - No external dependencies (stdlib only)
@@ -38,6 +40,11 @@ fmt.Println(tree.LongestPrefixOf("helloworld")) // "hello"
 
 fmt.Println(tree.CommonPrefix()) // ""
 
+fmt.Println(tree.Minimum()) // "hell"
+fmt.Println(tree.Maximum()) // "world"
+
+fmt.Println(tree.Remaining("hel")) // ["hell", "hello"]
+
 tree.Delete("world")
 
 tree.ForEach(func(key string) {
@@ -56,8 +63,11 @@ tree.ForEach(func(key string) {
 | `LongestPrefixOf(word string) string` | Returns the longest stored word that is a prefix of the input. |
 | `CommonPrefix() string` | Returns the longest common prefix among all stored words. |
 | `ForEach(fn func(key string))` | Calls fn for every word in the tree (DFS order). |
-| `Keys() *[]string` | Returns a pointer to a slice of all words. |
+| `Keys() []string` | Returns a slice of all words. |
 | `Size() int64` | Returns the number of stored words. |
+| `Minimum() string` | Returns the lexicographically smallest word (empty string if tree is empty). |
+| `Maximum() string` | Returns the lexicographically largest word (empty string if tree is empty). |
+| `Remaining(prefix string) []string` | Returns all words that start with the given prefix. |
 | `Clear()` | Removes all words from the tree. |
 
 ## Benchmarks

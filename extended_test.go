@@ -419,6 +419,231 @@ func TestForEachOrder(t *testing.T) {
 	}
 }
 
+func TestMinimumEmptyTree(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+
+	if m := tree.Minimum(); m != "" {
+		t.Fatalf("Expected empty, got %q", m)
+	}
+}
+
+func TestMinimumSingleWord(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+	tree.Add(wordHello)
+
+	if m := tree.Minimum(); m != wordHello {
+		t.Fatalf("Expected %q, got %q", wordHello, m)
+	}
+}
+
+func TestMinimumMultipleWords(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+	tree.Add("zebra")
+	tree.Add("apple")
+	tree.Add("mango")
+
+	if m := tree.Minimum(); m != "apple" {
+		t.Fatalf("Expected \"apple\", got %q", m)
+	}
+}
+
+func TestMinimumWithCommonPrefix(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+	tree.Add(wordAbcd)
+	tree.Add(wordAbc)
+	tree.Add(wordAb)
+
+	if m := tree.Minimum(); m != wordAb {
+		t.Fatalf("Expected %q, got %q", wordAb, m)
+	}
+}
+
+func TestMinimumWithEmptyString(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+	tree.Add("")
+	tree.Add(wordHello)
+
+	if m := tree.Minimum(); m != "" {
+		t.Fatalf("Expected \"\", got %q", m)
+	}
+}
+
+func TestMaximumEmptyTree(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+
+	if m := tree.Maximum(); m != "" {
+		t.Fatalf("Expected empty, got %q", m)
+	}
+}
+
+func TestMaximumSingleWord(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+	tree.Add(wordHello)
+
+	if m := tree.Maximum(); m != wordHello {
+		t.Fatalf("Expected %q, got %q", wordHello, m)
+	}
+}
+
+func TestMaximumMultipleWords(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+	tree.Add("apple")
+	tree.Add("zebra")
+	tree.Add("mango")
+
+	if m := tree.Maximum(); m != "zebra" {
+		t.Fatalf("Expected \"zebra\", got %q", m)
+	}
+}
+
+func TestMaximumWithCommonPrefix(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+	tree.Add(wordAb)
+	tree.Add(wordAbc)
+	tree.Add(wordAbcd)
+
+	if m := tree.Maximum(); m != wordAbcd {
+		t.Fatalf("Expected %q, got %q", wordAbcd, m)
+	}
+}
+
+func TestMaximumWithEmptyString(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+	tree.Add(wordHello)
+	tree.Add("")
+
+	if m := tree.Maximum(); m != wordHello {
+		t.Fatalf("Expected %q, got %q", wordHello, m)
+	}
+}
+
+func TestRemainingEmptyTree(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+
+	if r := tree.Remaining("abc"); len(r) != 0 {
+		t.Fatalf("Expected empty, got %v", r)
+	}
+}
+
+func TestRemainingEmptyPrefix(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+	words := []string{wordAb, wordAbc, wordAbcd, wordHello}
+
+	for _, w := range words {
+		tree.Add(w)
+	}
+
+	r := tree.Remaining("")
+	slices.Sort(r)
+	slices.Sort(words)
+
+	if !slices.Equal(r, words) {
+		t.Fatalf("Expected %v, got %v", words, r)
+	}
+}
+
+func TestRemainingMatchingPrefix(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+	tree.Add(wordAb)
+	tree.Add(wordAbc)
+	tree.Add(wordAbcd)
+	tree.Add(wordHello)
+
+	got := tree.Remaining(wordAb)
+	slices.Sort(got)
+
+	expected := []string{wordAb, wordAbc, wordAbcd}
+
+	if !slices.Equal(got, expected) {
+		t.Fatalf("Expected %v, got %v", expected, got)
+	}
+}
+
+func TestRemainingNoMatch(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+	tree.Add(wordAbc)
+
+	got := tree.Remaining("xyz")
+
+	if len(got) != 0 {
+		t.Fatalf("Expected empty, got %v", got)
+	}
+}
+
+func TestRemainingExactMatch(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+	tree.Add(wordAbc)
+	tree.Add(wordAbcd)
+
+	result := tree.Remaining(wordAbc)
+
+	if len(result) != 2 || !slices.Contains(result, wordAbc) || !slices.Contains(result, wordAbcd) {
+		t.Fatalf("Expected [%q %q], got %v", wordAbc, wordAbcd, result)
+	}
+}
+
+func TestRemainingDeepPrefix(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+	tree.Add("abcdef")
+	tree.Add("abcxyz")
+	tree.Add(wordHello)
+
+	got := tree.Remaining("abcd")
+	slices.Sort(got)
+
+	expected := []string{"abcdef"}
+
+	if !slices.Equal(got, expected) {
+		t.Fatalf("Expected %v, got %v", expected, got)
+	}
+}
+
+func TestRemainingWithEmptyString(t *testing.T) {
+	t.Parallel()
+
+	tree := radixtree.RadixTree{}
+	tree.Add("")
+	tree.Add(wordHello)
+
+	got := tree.Remaining("")
+
+	if len(got) != 2 || !slices.Contains(got, "") || !slices.Contains(got, wordHello) {
+		t.Fatalf("Expected [\"\" %q], got %v", wordHello, got)
+	}
+}
+
 func randomWord(rng *rand.Rand, minLen, maxLen int) string {
 	n := rng.Intn(maxLen-minLen+1) + minLen
 
@@ -464,6 +689,9 @@ func FuzzRadixTree(f *testing.F) {
 		_ = tree.CommonPrefix()
 		_ = tree.LongestPrefixOf(addWord)
 		_ = tree.StartsWith(addWord[:minInt(1, len(addWord))])
+		_ = tree.Minimum()
+		_ = tree.Maximum()
+		_ = tree.Remaining(addWord[:minInt(1, len(addWord))])
 	})
 }
 
