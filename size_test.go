@@ -61,10 +61,14 @@ func TestSize(t *testing.T) {
 		for _, e := range test.source {
 			tree.Add(e)
 		}
+		deleteCount := 0
 		for _, e := range test.wordsToDelete {
+			if tree.Contains(e) {
+				deleteCount++
+			}
 			tree.Delete(e)
 		}
-		expected := len(test.source) - len(test.wordsToDelete)
+		expected := len(test.source) - deleteCount
 		if expected != int(tree.Size()) {
 			t.Fatalf("Expected size %d got %d", expected, tree.Size())
 		}
