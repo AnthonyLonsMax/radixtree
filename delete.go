@@ -21,7 +21,10 @@ func (r *RadixTree) delete(nodeCursor *node, word string) (*node, bool) {
 	case commonLen == 0 && nodeCursor.prefix != "":
 		return nodeCursor, false
 
-	case commonLen == len(word) && nodeCursor.isTerminal:
+	case commonLen == len(word):
+		if commonLen < len(nodeCursor.prefix) || !nodeCursor.isTerminal {
+			return nodeCursor, false
+		}
 		nodeCursor.isTerminal = false
 		if len(nodeCursor.children) == 0 {
 			return nil, true
