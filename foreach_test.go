@@ -14,7 +14,7 @@ func TestForEach(t *testing.T) {
 		source []string
 	}
 
-	tc := []testCase{
+	testCases := []testCase{
 		{name: "empty tree", source: []string{}},
 		{name: "single word", source: []string{"a"}},
 		{name: "multiple unrelated words", source: []string{"hello", "world", "hi"}},
@@ -25,16 +25,21 @@ func TestForEach(t *testing.T) {
 		}},
 	}
 
-	for _, test := range tc {
+	for _, test := range testCases {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			var tree radixtree.RadixTree
+
 			for _, e := range test.source {
 				tree.Add(e)
 			}
+
 			collected := make(map[string]bool)
 			tree.ForEach(func(key string) {
 				collected[key] = true
 			})
+
 			for _, e := range test.source {
 				if !collected[e] {
 					t.Fatalf("Key %q should be returned by ForEach", e)

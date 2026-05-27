@@ -1,8 +1,8 @@
-// Package radixtree implements a radix tree data structure.
 package radixtree
 
 import (
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -52,24 +52,28 @@ func (r *RadixTree) Clear() {
 // PrintDebug prints the DFS traversal of the tree prefixes with level indentation.
 func (r *RadixTree) PrintDebug() {
 	if r.root == nil {
-		fmt.Println("<empty>")
+		os.Stderr.WriteString("<empty>\n")
+
 		return
 	}
+
 	r.dfsPrint(r.root, 0)
-	fmt.Println()
+	os.Stderr.WriteString("\n")
 }
 
-func (r *RadixTree) dfsPrint(n *node, level int) {
-	fn := func(terminal bool) string {
+func (r *RadixTree) dfsPrint(node *node, level int) {
+	formatFn := func(terminal bool) string {
 		if terminal {
 			return "W"
 		}
+
 		return "N"
 	}
-	indent := strings.Repeat(" ", level)
-	fmt.Printf("%s%s %v\n", indent, n.prefix, fn(n.isTerminal))
 
-	for _, node := range n.children {
-		r.dfsPrint(node, level+1)
+	indent := strings.Repeat(" ", level)
+	os.Stderr.WriteString(fmt.Sprintf("%s%s %v\n", indent, node.prefix, formatFn(node.isTerminal)))
+
+	for _, childNode := range node.children {
+		r.dfsPrint(childNode, level+1)
 	}
 }

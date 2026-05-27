@@ -15,10 +15,14 @@ func TestReadAllTheKeys(t *testing.T) {
 		source []string
 	}
 
-	tc := []testCase{
+	testCases := []testCase{
 		{
-			name:   "multiple words with common prefixes",
-			source: []string{"worderland", "word", "worddy", "work", "worry", "wor", "worries", "wallet", "love", "lonnly", "lovers", "anthony", "ony", "anth"},
+			name: "multiple words with common prefixes",
+			source: []string{
+				"worderland", "word", "worddy", "work", "worry",
+				"wor", "worries", "wallet", "love", "lonnly",
+				"lovers", "anthony", "ony", "anth",
+			},
 		},
 		{
 			name:   "empty tree",
@@ -34,12 +38,16 @@ func TestReadAllTheKeys(t *testing.T) {
 		},
 	}
 
-	for _, test := range tc {
+	for _, test := range testCases {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			var tree radixtree.RadixTree
+
 			for _, e := range test.source {
 				tree.Add(e)
 			}
+
 			keys := tree.Keys()
 			slices.Sort(keys)
 

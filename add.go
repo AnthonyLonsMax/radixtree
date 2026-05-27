@@ -8,27 +8,36 @@ func (r *RadixTree) Add(word string) bool {
 		if r.root == nil {
 			r.root = newNode("", true)
 			r.size++
+
 			return true
 		}
+
 		if r.root.prefix != "" {
 			r.nodeSplit(r.root, 0)
 		}
+
 		if !r.root.isTerminal {
 			r.root.isTerminal = true
 			r.size++
+
 			return true
 		}
+
 		return false
 	}
+
 	node, added := r.add(r.root, word)
+
 	r.root = node
+
 	if added {
 		r.size++
 	}
+
 	return added
 }
 
-func (r *RadixTree) nodeSplit(current *node, pos int) *node {
+func (r *RadixTree) nodeSplit(current *node, pos int) {
 	child := newNode(current.prefix[pos:], current.isTerminal)
 
 	maps.Copy(child.children, current.children)
@@ -38,8 +47,6 @@ func (r *RadixTree) nodeSplit(current *node, pos int) *node {
 
 	current.children[child.prefix[0]] = child
 	current.isTerminal = false
-
-	return child
 }
 
 func (r *RadixTree) add(cursor *node, word string) (*node, bool) {
@@ -48,55 +55,60 @@ func (r *RadixTree) add(cursor *node, word string) (*node, bool) {
 	}
 
 	commonLen := commonPrefixLength(cursor.prefix, word)
+
 	var added bool
 
 	switch {
 	case commonLen == 0:
-		if cursor.prefix != "" {
-			r.nodeSplit(cursor, 0)
-		}
-		if child, ok := cursor.children[word[commonLen]]; ok {
-			cursor.children[word[commonLen]], added = r.add(child, word[commonLen:])
-		} else {
-			cursor.children[word[commonLen]] = newNode(word[commonLen:], true)
-			added = true
-		}
+		added = r.addCommonLenZero(cursor, word, commonLen)
 
 	case commonLen == len(cursor.prefix) && commonLen == len(word):
 		added = !cursor.isTerminal
 		cursor.isTerminal = true
 
 	case commonLen == len(cursor.prefix) && commonLen < len(word):
-		if child, ok := cursor.children[word[commonLen]]; ok {
-			cursor.children[word[commonLen]], added = r.add(child, word[commonLen:])
-		} else {
-			cursor.children[word[commonLen]] = newNode(word[commonLen:], true)
-			added = true
-		}
+		added = r.addRecurseOrCreate(cursor, word, commonLen)
 
 	case commonLen == len(word) && commonLen < len(cursor.prefix):
 		r.nodeSplit(cursor, commonLen)
 		added = true
+
 		cursor.isTerminal = true
 
 	default:
 		r.nodeSplit(cursor, commonLen)
-
-		if child, ok := cursor.children[word[commonLen]]; ok {
-			cursor.children[word[commonLen]], added = r.add(child, word[commonLen:])
-		} else {
-			cursor.children[word[commonLen]] = newNode(word[commonLen:], true)
-			added = true
-		}
+		added = r.addRecurseOrCreate(cursor, word, commonLen)
 	}
 
 	if !cursor.isTerminal && len(cursor.children) == 1 {
 		for _, child := range cursor.children {
 			cursor.prefix += child.prefix
 			cursor.children = child.children
+
 			cursor.isTerminal = child.isTerminal
 		}
 	}
 
 	return cursor, added
+}
+
+func (r *RadixTree) addCommonLenZero(cursor *node, word string, commonLen int) bool {
+	if cursor.prefix != "" {
+		r.nodeSplit(cursor, 0)
+	}
+
+	return r.addRecurseOrCreate(cursor, word, commonLen)
+}
+
+func (r *RadixTree) addRecurseOrCreate(cursor *node, word string, commonLen int) bool {
+	if child, ok := cursor.children[word[commonLen]]; ok {
+		child, added := r.add(child, word[commonLen:])
+		cursor.children[word[commonLen]] = child
+
+		return added
+	}
+
+	cursor.children[word[commonLen]] = newNode(word[commonLen:], true)
+
+	return true
 }

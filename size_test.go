@@ -15,10 +15,14 @@ func TestSize(t *testing.T) {
 		wordsToDelete []string
 	}
 
-	tc := []testCase{
+	testCases := []testCase{
 		{
-			name:   "delete subset of words with common prefixes",
-			source: []string{"worderland", "word", "worddy", "work", "worry", "wor", "worries", "wallet", "love", "lonnly", "lovers", "anthony", "ony", "anth"},
+			name: "delete subset of words with common prefixes",
+			source: []string{
+				"worderland", "word", "worddy", "work", "worry",
+				"wor", "worries", "wallet", "love", "lonnly",
+				"lovers", "anthony", "ony", "anth",
+			},
 			wordsToDelete: []string{
 				"anthony", "ony", "anth",
 			},
@@ -45,20 +49,28 @@ func TestSize(t *testing.T) {
 		},
 	}
 
-	for _, test := range tc {
+	for _, test := range testCases {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			var tree radixtree.RadixTree
+
 			for _, e := range test.source {
 				tree.Add(e)
 			}
+
 			deleteCount := 0
+
 			for _, e := range test.wordsToDelete {
 				if tree.Contains(e) {
 					deleteCount++
 				}
+
 				tree.Delete(e)
 			}
+
 			expected := len(test.source) - deleteCount
+
 			if expected != int(tree.Size()) {
 				t.Fatalf("Expected size %d got %d", expected, tree.Size())
 			}

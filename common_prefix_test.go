@@ -15,7 +15,7 @@ func TestCommonPrefix(t *testing.T) {
 		commonPrefix string
 	}
 
-	tc := []testCase{
+	testCases := []testCase{
 		{
 			name:         "multiple words with common prefix",
 			source:       []string{"worderland", "word", "worddy", "work", "worry", "wor"},
@@ -48,12 +48,16 @@ func TestCommonPrefix(t *testing.T) {
 		},
 	}
 
-	for _, test := range tc {
+	for _, test := range testCases {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			var tree radixtree.RadixTree
+
 			for _, e := range test.source {
 				tree.Add(e)
 			}
+
 			if tree.CommonPrefix() != test.commonPrefix {
 				t.Fatalf("Word %s should be the common prefix", test.commonPrefix)
 			}

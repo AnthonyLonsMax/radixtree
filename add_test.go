@@ -15,10 +15,14 @@ func TestAddNodes(t *testing.T) {
 		shouldContains []string
 	}
 
-	tc := []testCase{
+	testCases := []testCase{
 		{
-			name:   "multiple words with common prefixes",
-			source: []string{"worderland", "word", "worddy", "work", "worry", "wor", "worries", "wallet", "love", "lonnly", "lovers", "anthony", "ony", "anth"},
+			name: "multiple words with common prefixes",
+			source: []string{
+				"worderland", "word", "worddy", "work", "worry",
+				"wor", "worries", "wallet", "love", "lonnly",
+				"lovers", "anthony", "ony", "anth",
+			},
 			shouldContains: []string{
 				"worddy", "work", "worry", "wor", "worries", "wallet", "love",
 			},
@@ -50,12 +54,16 @@ func TestAddNodes(t *testing.T) {
 		},
 	}
 
-	for _, test := range tc {
+	for _, test := range testCases {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			var tree radixtree.RadixTree
+
 			for _, e := range test.source {
 				tree.Add(e)
 			}
+
 			for _, e := range test.shouldContains {
 				if !tree.Contains(e) {
 					t.Fatalf("Word %s should be in the tree", e)
