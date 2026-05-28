@@ -33,6 +33,11 @@ type edge struct {
 	childrens []*edge
 }
 
+// Avoid the use of `""` as root node
+type edgeRoot struct {
+	childrens [512]*edge
+}
+
 func (e *edge) getChildren(char rune) *edge {
 	for index, prefixChild := range e.prefixes {
 		if prefixChild == char {
