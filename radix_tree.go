@@ -3,6 +3,8 @@ package radixtree
 import (
 	"fmt"
 	"os"
+	"slices"
+	"sort"
 	"strings"
 )
 
@@ -23,6 +25,35 @@ type node struct {
 	prefix     string
 	children   map[byte]*node
 	isTerminal bool
+}
+
+type edge struct {
+	prefixes  string
+	prefix    string
+	childrens []*edge
+}
+
+func (e *edge) getChildren(char rune) *edge {
+	for index, prefixChild := range e.prefixes {
+		if prefixChild == char {
+			return e.childrens[index]
+		}
+	}
+	return nil
+}
+
+func (e *edge) insertOrdered(char rune, insertEdge *edge) {
+	index := sort.Search(len(e.prefixes), func(i int) bool {
+		return rune(e.prefixes[i]) > char
+	})
+	if index < len(e.prefixes) && rune(e.prefixes[index]) > char {
+		e.prefixes = e.prefixes[:index] + string(char) + e.prefixes[index:]
+		e.childrens = slices.Insert(e.childrens, index, insertEdge)
+	} else {
+		e.prefixes += string(char)
+		e.childrens = append(e.childrens, insertEdge)
+	}
+
 }
 
 // newNode creates a new node with the given prefix and terminal status.
