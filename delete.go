@@ -1,7 +1,7 @@
 package radixtree
 
 // Delete removes a word from the tree. Returns true if the word was found and deleted.
-func (r *RadixTree) Delete(word string) bool {
+func (r *MapRadixTree) Delete(word string) bool {
 	node, ok := r.delete(r.root, word)
 
 	r.root = node
@@ -13,7 +13,7 @@ func (r *RadixTree) Delete(word string) bool {
 	return ok
 }
 
-func (r *RadixTree) delete(nodeCursor *node, word string) (*node, bool) {
+func (r *MapRadixTree) delete(nodeCursor *node, word string) (*node, bool) {
 	if nodeCursor == nil {
 		return nodeCursor, false
 	}
@@ -36,7 +36,7 @@ func (r *RadixTree) delete(nodeCursor *node, word string) (*node, bool) {
 	}
 }
 
-func (r *RadixTree) deleteExactMatch(nodeCursor *node) (*node, bool) {
+func (r *MapRadixTree) deleteExactMatch(nodeCursor *node) (*node, bool) {
 	nodeCursor.isTerminal = false
 
 	if len(nodeCursor.children) == 0 {
@@ -55,7 +55,7 @@ func (r *RadixTree) deleteExactMatch(nodeCursor *node) (*node, bool) {
 	return nodeCursor, true
 }
 
-func (r *RadixTree) deleteRecurse(nodeCursor *node, word string, commonLen int) (*node, bool) {
+func (r *MapRadixTree) deleteRecurse(nodeCursor *node, word string, commonLen int) (*node, bool) {
 	child, ok := r.delete(nodeCursor.children[word[commonLen]], word[commonLen:])
 
 	if child != nil {

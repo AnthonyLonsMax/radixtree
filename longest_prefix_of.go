@@ -1,11 +1,11 @@
 package radixtree
 
 // LongestPrefixOf returns the longest key that is a prefix of the given word.
-func (r *RadixTree) LongestPrefixOf(word string) string {
+func (r *MapRadixTree) LongestPrefixOf(word string) string {
 	return r.longestPrefixOf(r.root, word)
 }
 
-func (r *RadixTree) longestPrefixOf(cursor *node, word string) string {
+func (r *MapRadixTree) longestPrefixOf(cursor *node, word string) string {
 	if cursor == nil {
 		return ""
 	}

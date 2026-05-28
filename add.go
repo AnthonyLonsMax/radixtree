@@ -3,7 +3,7 @@ package radixtree
 import "maps"
 
 // Add inserts a word into the radix tree. Returns true if the word was newly added.
-func (r *RadixTree) Add(word string) bool {
+func (r *MapRadixTree) Add(word string) bool {
 	if word == "" {
 		if r.root == nil {
 			r.root = newNode("", true)
@@ -37,7 +37,7 @@ func (r *RadixTree) Add(word string) bool {
 	return added
 }
 
-func (r *RadixTree) nodeSplit(current *node, pos int) {
+func (r *MapRadixTree) nodeSplit(current *node, pos int) {
 	child := newNode(current.prefix[pos:], current.isTerminal)
 
 	maps.Copy(child.children, current.children)
@@ -49,7 +49,7 @@ func (r *RadixTree) nodeSplit(current *node, pos int) {
 	current.isTerminal = false
 }
 
-func (r *RadixTree) add(cursor *node, word string) (*node, bool) {
+func (r *MapRadixTree) add(cursor *node, word string) (*node, bool) {
 	if cursor == nil {
 		return newNode(word, true), true
 	}
@@ -92,7 +92,7 @@ func (r *RadixTree) add(cursor *node, word string) (*node, bool) {
 	return cursor, added
 }
 
-func (r *RadixTree) addCommonLenZero(cursor *node, word string, commonLen int) bool {
+func (r *MapRadixTree) addCommonLenZero(cursor *node, word string, commonLen int) bool {
 	if cursor.prefix != "" {
 		r.nodeSplit(cursor, 0)
 	}
@@ -100,7 +100,7 @@ func (r *RadixTree) addCommonLenZero(cursor *node, word string, commonLen int) b
 	return r.addRecurseOrCreate(cursor, word, commonLen)
 }
 
-func (r *RadixTree) addRecurseOrCreate(cursor *node, word string, commonLen int) bool {
+func (r *MapRadixTree) addRecurseOrCreate(cursor *node, word string, commonLen int) bool {
 	if child, ok := cursor.children[word[commonLen]]; ok {
 		child, added := r.add(child, word[commonLen:])
 		cursor.children[word[commonLen]] = child

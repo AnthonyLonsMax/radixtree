@@ -1,7 +1,7 @@
 package radixtree
 
 // ForEach calls callbackFn for each word in the tree.
-func (r *RadixTree) ForEach(callbackFn func(key string)) {
+func (r *MapRadixTree) ForEach(callbackFn func(key string)) {
 	if r.root == nil {
 		return
 	}

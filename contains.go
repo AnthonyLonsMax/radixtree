@@ -1,11 +1,11 @@
 package radixtree
 
 // Contains returns true if the word exists in the tree.
-func (r *RadixTree) Contains(word string) bool {
+func (r *MapRadixTree) Contains(word string) bool {
 	return r.contains(r.root, word)
 }
 
-func (r *RadixTree) contains(nodeCursor *node, word string) bool {
+func (r *MapRadixTree) contains(nodeCursor *node, word string) bool {
 	if nodeCursor == nil {
 		return false
 	}

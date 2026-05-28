@@ -6,6 +6,18 @@ import (
 	"strings"
 )
 
+type RadixTree interface {
+	Add(word string) bool
+	Delete(word string) bool
+	Contains(word string) bool
+	StartsWith(word string) bool
+	LongestPrefixOf(word string) string
+	ForEach(fn func(string))
+	Keys() []string
+	Size() int64
+	Remaining(prefix string) []string
+}
+
 // node represents a node in the radix tree.
 type node struct {
 	prefix     string
@@ -22,10 +34,14 @@ func newNode(prefix string, isTerminal bool) *node {
 	}
 }
 
-// RadixTree represents a radix tree data structure.
-type RadixTree struct {
+// MapRadixTree represents a radix tree data structure.
+type MapRadixTree struct {
 	size int64
 	root *node
+}
+
+func RadixMap() RadixTree {
+	return new(MapRadixTree)
 }
 
 func commonPrefixLength(word1, word2 string) int {
@@ -44,13 +60,13 @@ func commonPrefixLength(word1, word2 string) int {
 }
 
 // Clear removes all words from the tree.
-func (r *RadixTree) Clear() {
+func (r *MapRadixTree) Clear() {
 	r.root = nil
 	r.size = 0
 }
 
 // PrintDebug prints the DFS traversal of the tree prefixes with level indentation.
-func (r *RadixTree) PrintDebug() {
+func (r *MapRadixTree) PrintDebug() {
 	if r.root == nil {
 		os.Stderr.WriteString("<empty>\n")
 
@@ -61,7 +77,7 @@ func (r *RadixTree) PrintDebug() {
 	os.Stderr.WriteString("\n")
 }
 
-func (r *RadixTree) dfsPrint(node *node, level int) {
+func (r *MapRadixTree) dfsPrint(node *node, level int) {
 	formatFn := func(terminal bool) string {
 		if terminal {
 			return "W"
@@ -71,7 +87,7 @@ func (r *RadixTree) dfsPrint(node *node, level int) {
 	}
 
 	indent := strings.Repeat(" ", level)
-	os.Stderr.WriteString(fmt.Sprintf("%s%s %v\n", indent, node.prefix, formatFn(node.isTerminal)))
+	fmt.Printf("%s%s %v\n", indent, node.prefix, formatFn(node.isTerminal))
 
 	for _, childNode := range node.children {
 		r.dfsPrint(childNode, level+1)

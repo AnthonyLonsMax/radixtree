@@ -4,7 +4,7 @@ import "math"
 
 // Minimum returns the lexicographically smallest word in the tree.
 // Returns empty string if the tree is empty.
-func (r *RadixTree) Minimum() string {
+func (r *MapRadixTree) Minimum() string {
 	if r.root == nil {
 		return ""
 	}

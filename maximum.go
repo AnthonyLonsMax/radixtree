@@ -2,7 +2,7 @@ package radixtree
 
 // Maximum returns the lexicographically largest word in the tree.
 // Returns empty string if the tree is empty.
-func (r *RadixTree) Maximum() string {
+func (r *MapRadixTree) Maximum() string {
 	if r.root == nil {
 		return ""
 	}

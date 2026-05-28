@@ -39,7 +39,7 @@ func walk(cursor *node, buf *[]byte, yield func(string)) {
 }
 
 // Keys returns all stored words in the tree.
-func (r *RadixTree) Keys() []string {
+func (r *MapRadixTree) Keys() []string {
 	result := make([]string, 0)
 
 	if r.root == nil {

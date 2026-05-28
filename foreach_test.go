@@ -29,7 +29,7 @@ func TestForEach(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			var tree radixtree.RadixTree
+			var tree radixtree.MapRadixTree
 
 			for _, e := range test.source {
 				tree.Add(e)

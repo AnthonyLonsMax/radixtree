@@ -3,7 +3,7 @@ package radixtree
 import "strings"
 
 // CommonPrefix returns the longest common prefix among all stored words.
-func (r *RadixTree) CommonPrefix() string {
+func (r *MapRadixTree) CommonPrefix() string {
 	if r.root == nil {
 		return ""
 	}

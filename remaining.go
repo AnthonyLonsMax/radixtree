@@ -1,7 +1,7 @@
 package radixtree
 
 // Remaining returns all stored words that have the given prefix.
-func (r *RadixTree) Remaining(prefix string) []string {
+func (r *MapRadixTree) Remaining(prefix string) []string {
 	result := make([]string, 0)
 
 	if r.root == nil {

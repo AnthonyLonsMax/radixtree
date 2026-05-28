@@ -21,7 +21,7 @@ const (
 func TestClear(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add(wordHello)
 	tree.Add("world")
 	tree.Clear()
@@ -42,7 +42,7 @@ func TestClear(t *testing.T) {
 func TestAddReturnsBool(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 
 	if !tree.Add(wordHello) {
 		t.Fatal("Add should return true for new word")
@@ -64,7 +64,7 @@ func TestAddReturnsBool(t *testing.T) {
 func TestDeleteReturnsBool(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add(wordHello)
 
 	if !tree.Delete(wordHello) {
@@ -83,7 +83,7 @@ func TestDeleteReturnsBool(t *testing.T) {
 func TestAddDeleteRoundtrip(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	words := []string{"a", wordAb, wordAbc, wordAbcd, "abcde"}
 
 	for _, w := range words {
@@ -113,7 +113,7 @@ func TestLargeDataSet(t *testing.T) {
 	t.Parallel()
 
 	const count = 10000
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 
 	for i := range count {
 		word := strings.Repeat("a", i+1)
@@ -146,7 +146,7 @@ func TestRandomOperations(t *testing.T) {
 	t.Parallel()
 
 	rng := rand.New(rand.NewSource(42)) //nolint:gosec
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	reference := make(map[string]bool)
 
 	ops := 5000
@@ -188,7 +188,7 @@ func TestRandomOperations(t *testing.T) {
 func TestForEachEmptyTree(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	count := 0
 	tree.ForEach(func(string) { count++ })
 
@@ -200,7 +200,7 @@ func TestForEachEmptyTree(t *testing.T) {
 func TestKeysEmptyTree(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	keys := tree.Keys()
 
 	if len(keys) != 0 {
@@ -211,7 +211,7 @@ func TestKeysEmptyTree(t *testing.T) {
 func TestLongestPrefixOfOnEmptyTree(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 
 	if r := tree.LongestPrefixOf("anything"); r != "" {
 		t.Fatalf("Expected empty, got %q", r)
@@ -221,7 +221,7 @@ func TestLongestPrefixOfOnEmptyTree(t *testing.T) {
 func TestStartsWithOnEmptyTree(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 
 	if tree.StartsWith("a") {
 		t.Fatal("Empty tree should not start with any prefix")
@@ -231,7 +231,7 @@ func TestStartsWithOnEmptyTree(t *testing.T) {
 func TestCommonPrefixOnSingleChar(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add("x")
 	tree.Add("y")
 
@@ -243,7 +243,7 @@ func TestCommonPrefixOnSingleChar(t *testing.T) {
 func TestAddDeleteInterleaved(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	words := []string{wordTest, wordTesting, "tester", "tested"}
 
 	for _, w := range words {
@@ -273,7 +273,7 @@ func TestAddDeleteInterleaved(t *testing.T) {
 func TestUnicodeWords(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	words := []string{"日本語", "日本", "にほんご", "日本語テスト", "café", "cafè", "cafeteria"}
 
 	for _, w := range words {
@@ -322,7 +322,7 @@ func TestCommonPrefixEdgeCases(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			tree := radixtree.RadixTree{}
+			tree := radixtree.MapRadixTree{}
 
 			for _, w := range test.words {
 				tree.Add(w)
@@ -338,7 +338,7 @@ func TestCommonPrefixEdgeCases(t *testing.T) {
 func TestStartsWithEdgeCases(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add(wordAbc)
 
 	cases := []struct {
@@ -368,7 +368,7 @@ func TestStartsWithEdgeCases(t *testing.T) {
 func TestLongestPrefixOfEdgeCases(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add("a")
 	tree.Add(wordAb)
 	tree.Add(wordAbc)
@@ -399,7 +399,7 @@ func TestLongestPrefixOfEdgeCases(t *testing.T) {
 func TestForEachOrder(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	words := []string{"b", "a", "c", wordAb, "ac"}
 
 	for _, w := range words {
@@ -422,7 +422,7 @@ func TestForEachOrder(t *testing.T) {
 func TestMinimumEmptyTree(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 
 	if m := tree.Minimum(); m != "" {
 		t.Fatalf("Expected empty, got %q", m)
@@ -432,7 +432,7 @@ func TestMinimumEmptyTree(t *testing.T) {
 func TestMinimumSingleWord(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add(wordHello)
 
 	if m := tree.Minimum(); m != wordHello {
@@ -443,7 +443,7 @@ func TestMinimumSingleWord(t *testing.T) {
 func TestMinimumMultipleWords(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add("zebra")
 	tree.Add("apple")
 	tree.Add("mango")
@@ -456,7 +456,7 @@ func TestMinimumMultipleWords(t *testing.T) {
 func TestMinimumWithCommonPrefix(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add(wordAbcd)
 	tree.Add(wordAbc)
 	tree.Add(wordAb)
@@ -469,7 +469,7 @@ func TestMinimumWithCommonPrefix(t *testing.T) {
 func TestMinimumWithEmptyString(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add("")
 	tree.Add(wordHello)
 
@@ -481,7 +481,7 @@ func TestMinimumWithEmptyString(t *testing.T) {
 func TestMaximumEmptyTree(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 
 	if m := tree.Maximum(); m != "" {
 		t.Fatalf("Expected empty, got %q", m)
@@ -491,7 +491,7 @@ func TestMaximumEmptyTree(t *testing.T) {
 func TestMaximumSingleWord(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add(wordHello)
 
 	if m := tree.Maximum(); m != wordHello {
@@ -502,7 +502,7 @@ func TestMaximumSingleWord(t *testing.T) {
 func TestMaximumMultipleWords(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add("apple")
 	tree.Add("zebra")
 	tree.Add("mango")
@@ -515,7 +515,7 @@ func TestMaximumMultipleWords(t *testing.T) {
 func TestMaximumWithCommonPrefix(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add(wordAb)
 	tree.Add(wordAbc)
 	tree.Add(wordAbcd)
@@ -528,7 +528,7 @@ func TestMaximumWithCommonPrefix(t *testing.T) {
 func TestMaximumWithEmptyString(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add(wordHello)
 	tree.Add("")
 
@@ -540,7 +540,7 @@ func TestMaximumWithEmptyString(t *testing.T) {
 func TestRemainingEmptyTree(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 
 	if r := tree.Remaining("abc"); len(r) != 0 {
 		t.Fatalf("Expected empty, got %v", r)
@@ -550,7 +550,7 @@ func TestRemainingEmptyTree(t *testing.T) {
 func TestRemainingEmptyPrefix(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	words := []string{wordAb, wordAbc, wordAbcd, wordHello}
 
 	for _, w := range words {
@@ -569,7 +569,7 @@ func TestRemainingEmptyPrefix(t *testing.T) {
 func TestRemainingMatchingPrefix(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add(wordAb)
 	tree.Add(wordAbc)
 	tree.Add(wordAbcd)
@@ -588,7 +588,7 @@ func TestRemainingMatchingPrefix(t *testing.T) {
 func TestRemainingNoMatch(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add(wordAbc)
 
 	got := tree.Remaining("xyz")
@@ -601,7 +601,7 @@ func TestRemainingNoMatch(t *testing.T) {
 func TestRemainingExactMatch(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add(wordAbc)
 	tree.Add(wordAbcd)
 
@@ -615,7 +615,7 @@ func TestRemainingExactMatch(t *testing.T) {
 func TestRemainingDeepPrefix(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add("abcdef")
 	tree.Add("abcxyz")
 	tree.Add(wordHello)
@@ -633,7 +633,7 @@ func TestRemainingDeepPrefix(t *testing.T) {
 func TestRemainingWithEmptyString(t *testing.T) {
 	t.Parallel()
 
-	tree := radixtree.RadixTree{}
+	tree := radixtree.MapRadixTree{}
 	tree.Add("")
 	tree.Add(wordHello)
 
@@ -664,7 +664,7 @@ func FuzzRadixTree(f *testing.F) {
 	}
 
 	f.Fuzz(func(t *testing.T, addWord, delWord string, _ int32) {
-		tree := radixtree.RadixTree{}
+		tree := radixtree.MapRadixTree{}
 
 		tree.Add(addWord)
 
