@@ -1,9 +1,9 @@
-package radixtree_test
+package radixmap_test
 
 import (
 	"testing"
 
-	"github.com/AnthonyLonsMax/radixtree"
+	"github.com/AnthonyLonsMax/radixtree/internal/radixmap"
 )
 
 func TestSize(t *testing.T) {
@@ -53,7 +53,7 @@ func TestSize(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			var tree radixtree.MapRadixTree
+			var tree radixmap.MapRadixTree
 
 			for _, e := range test.source {
 				tree.Add(e)

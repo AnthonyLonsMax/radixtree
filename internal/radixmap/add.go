@@ -1,4 +1,4 @@
-package radixtree
+package radixmap
 
 import "maps"
 

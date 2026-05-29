@@ -1,9 +1,9 @@
-package radixtree_test
+package radixmap_test
 
 import (
 	"testing"
 
-	"github.com/AnthonyLonsMax/radixtree"
+	"github.com/AnthonyLonsMax/radixtree/internal/radixmap"
 )
 
 func TestStartsWith(t *testing.T) {
@@ -18,11 +18,11 @@ func TestStartsWith(t *testing.T) {
 
 	testCases := []testCase{
 		{name: "empty tree", source: []string{}, prefix: "a", expected: false},
-		{name: "matching prefix", source: []string{hello, world}, prefix: "he", expected: true},
-		{name: "matching another prefix", source: []string{hello, world}, prefix: "wor", expected: true},
-		{name: "non-matching prefix", source: []string{hello, world}, prefix: "xyz", expected: false},
-		{name: "full word as prefix", source: []string{hello, world}, prefix: hello, expected: true},
-		{name: "prefix longer than any word", source: []string{hello}, prefix: "helloworld", expected: false},
+		{name: "matching prefix", source: []string{"hello", "world"}, prefix: "he", expected: true},
+		{name: "matching another prefix", source: []string{"hello", "world"}, prefix: "wor", expected: true},
+		{name: "non-matching prefix", source: []string{"hello", "world"}, prefix: "xyz", expected: false},
+		{name: "full word as prefix", source: []string{"hello", "world"}, prefix: "hello", expected: true},
+		{name: "prefix longer than any word", source: []string{"hello"}, prefix: "helloworld", expected: false},
 		{name: "empty prefix on empty tree", source: []string{""}, prefix: "", expected: true},
 		{name: "empty prefix on non-empty tree", source: []string{"test"}, prefix: "", expected: true},
 		{name: "single char prefix present", source: []string{"abc", "def"}, prefix: "a", expected: true},
@@ -34,7 +34,7 @@ func TestStartsWith(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			var tree radixtree.MapRadixTree
+			var tree radixmap.MapRadixTree
 
 			for _, e := range test.source {
 				tree.Add(e)

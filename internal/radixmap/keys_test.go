@@ -1,10 +1,10 @@
-package radixtree_test
+package radixmap_test
 
 import (
 	"slices"
 	"testing"
 
-	"github.com/AnthonyLonsMax/radixtree"
+	"github.com/AnthonyLonsMax/radixtree/internal/radixmap"
 )
 
 func TestReadAllTheKeys(t *testing.T) {
@@ -42,7 +42,7 @@ func TestReadAllTheKeys(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			var tree radixtree.MapRadixTree
+			var tree radixmap.MapRadixTree
 
 			for _, e := range test.source {
 				tree.Add(e)

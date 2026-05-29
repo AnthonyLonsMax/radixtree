@@ -1,4 +1,4 @@
-package radixtree_test
+package radixmap_test
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/AnthonyLonsMax/radixtree"
+	"github.com/AnthonyLonsMax/radixtree/internal/radixmap"
 )
 
 func BenchmarkAdd(b *testing.B) {
@@ -17,7 +17,7 @@ func BenchmarkAdd(b *testing.B) {
 
 			for idx := range b.N {
 				b.StopTimer()
-				tree := radixtree.MapRadixTree{}
+				tree := radixmap.MapRadixTree{}
 				start := (idx * size) % len(words)
 				b.StartTimer()
 
@@ -33,7 +33,7 @@ func BenchmarkContains(b *testing.B) {
 	for _, size := range []int{10, 100, 1000, 10000} {
 		b.Run(fmt.Sprintf("size=%d", size), func(b *testing.B) {
 			words := generateWords(size, 10)
-			tree := radixtree.MapRadixTree{}
+			tree := radixmap.MapRadixTree{}
 
 			for _, w := range words {
 				tree.Add(w)
@@ -52,7 +52,7 @@ func BenchmarkContainsNegative(b *testing.B) {
 	for _, size := range []int{10, 100, 1000, 10000} {
 		b.Run(fmt.Sprintf("size=%d", size), func(b *testing.B) {
 			words := generateWords(size, 10)
-			tree := radixtree.MapRadixTree{}
+			tree := radixmap.MapRadixTree{}
 
 			for _, w := range words {
 				tree.Add(w)
@@ -75,7 +75,7 @@ func BenchmarkDelete(b *testing.B) {
 
 			for idx := range b.N {
 				b.StopTimer()
-				tree := radixtree.MapRadixTree{}
+				tree := radixmap.MapRadixTree{}
 
 				for _, w := range words {
 					tree.Add(w)
@@ -92,7 +92,7 @@ func BenchmarkForEach(b *testing.B) {
 	for _, size := range []int{10, 100, 1000, 10000} {
 		b.Run(fmt.Sprintf("size=%d", size), func(b *testing.B) {
 			words := generateWords(size, 10)
-			tree := radixtree.MapRadixTree{}
+			tree := radixmap.MapRadixTree{}
 
 			for _, w := range words {
 				tree.Add(w)
@@ -111,7 +111,7 @@ func BenchmarkKeys(b *testing.B) {
 	for _, size := range []int{10, 100, 1000, 10000} {
 		b.Run(fmt.Sprintf("size=%d", size), func(b *testing.B) {
 			words := generateWords(size, 10)
-			tree := radixtree.MapRadixTree{}
+			tree := radixmap.MapRadixTree{}
 
 			for _, w := range words {
 				tree.Add(w)
@@ -130,7 +130,7 @@ func BenchmarkLongestPrefixOf(b *testing.B) {
 	for _, size := range []int{10, 100, 1000, 10000} {
 		b.Run(fmt.Sprintf("size=%d", size), func(b *testing.B) {
 			words := generateWords(size, 10)
-			tree := radixtree.MapRadixTree{}
+			tree := radixmap.MapRadixTree{}
 
 			for _, w := range words {
 				tree.Add(w)
@@ -150,7 +150,7 @@ func BenchmarkStartsWith(b *testing.B) {
 	for _, size := range []int{10, 100, 1000, 10000} {
 		b.Run(fmt.Sprintf("size=%d", size), func(b *testing.B) {
 			words := generateWords(size, 10)
-			tree := radixtree.MapRadixTree{}
+			tree := radixmap.MapRadixTree{}
 
 			for _, w := range words {
 				tree.Add(w)
@@ -175,7 +175,7 @@ func BenchmarkCommonPrefix(b *testing.B) {
 				words = append(words, fmt.Sprintf("%s_%d", base, i))
 			}
 
-			tree := radixtree.MapRadixTree{}
+			tree := radixmap.MapRadixTree{}
 
 			for _, w := range words {
 				tree.Add(w)
@@ -193,7 +193,7 @@ func BenchmarkCommonPrefix(b *testing.B) {
 func BenchmarkAddSequentialPrefixes(b *testing.B) {
 	b.Run("size=1000", func(b *testing.B) {
 		for range b.N {
-			tree := radixtree.MapRadixTree{}
+			tree := radixmap.MapRadixTree{}
 
 			for i := range 1000 {
 				tree.Add(strings.Repeat("a", i+1))
@@ -207,7 +207,7 @@ func BenchmarkMixedOperations(b *testing.B) {
 	b.ResetTimer()
 
 	for range b.N {
-		tree := radixtree.MapRadixTree{}
+		tree := radixmap.MapRadixTree{}
 
 		for _, w := range words {
 			tree.Add(w)

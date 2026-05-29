@@ -1,4 +1,4 @@
-package radixtree
+package radixmap
 
 // Delete removes a word from the tree. Returns true if the word was found and deleted.
 func (r *MapRadixTree) Delete(word string) bool {

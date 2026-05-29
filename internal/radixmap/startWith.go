@@ -1,4 +1,4 @@
-package radixtree
+package radixmap
 
 // StartsWith returns true if any word in the tree has the given prefix.
 func (r *MapRadixTree) StartsWith(word string) bool {

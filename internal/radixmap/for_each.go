@@ -1,4 +1,4 @@
-package radixtree
+package radixmap
 
 // ForEach calls callbackFn for each word in the tree.
 func (r *MapRadixTree) ForEach(callbackFn func(key string)) {

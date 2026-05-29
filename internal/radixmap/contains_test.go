@@ -1,9 +1,9 @@
-package radixtree_test
+package radixmap_test
 
 import (
 	"testing"
 
-	"github.com/AnthonyLonsMax/radixtree"
+	"github.com/AnthonyLonsMax/radixtree/internal/radixmap"
 )
 
 func TestContains(t *testing.T) {
@@ -18,11 +18,11 @@ func TestContains(t *testing.T) {
 
 	testCases := []testCase{
 		{name: "empty tree", source: []string{}, search: "a", shouldFind: false},
-		{name: "find existing word", source: []string{hello, world}, search: hello, shouldFind: true},
-		{name: "find another existing word", source: []string{hello, world}, search: world, shouldFind: true},
-		{name: "non-existent word", source: []string{hello, world}, search: "xyz", shouldFind: false},
-		{name: "partial match should not be found", source: []string{hello, world}, search: "hell", shouldFind: false},
-		{name: "prefix that is also a word", source: []string{"hell", hello}, search: "hell", shouldFind: true},
+		{name: "find existing word", source: []string{"hello", "world"}, search: "hello", shouldFind: true},
+		{name: "find another existing word", source: []string{"hello", "world"}, search: "world", shouldFind: true},
+		{name: "non-existent word", source: []string{"hello", "world"}, search: "xyz", shouldFind: false},
+		{name: "partial match should not be found", source: []string{"hello", "world"}, search: "hell", shouldFind: false},
+		{name: "prefix that is also a word", source: []string{"hell", "hello"}, search: "hell", shouldFind: true},
 		{name: "empty string in tree", source: []string{""}, search: "", shouldFind: true},
 		{name: "search empty string in non-empty tree", source: []string{"test"}, search: "", shouldFind: false},
 		{name: "nested prefixes", source: []string{"a", "ab", "abc"}, search: "ab", shouldFind: true},
@@ -32,7 +32,7 @@ func TestContains(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			var tree radixtree.MapRadixTree
+			var tree radixmap.MapRadixTree
 
 			for _, e := range test.source {
 				tree.Add(e)

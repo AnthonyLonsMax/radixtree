@@ -1,9 +1,9 @@
-package radixtree_test
+package radixmap_test
 
 import (
 	"testing"
 
-	"github.com/AnthonyLonsMax/radixtree"
+	"github.com/AnthonyLonsMax/radixtree/internal/radixmap"
 )
 
 func TestDeleteWord(t *testing.T) {
@@ -30,17 +30,17 @@ func TestDeleteWord(t *testing.T) {
 		{
 			name:              "delete from empty tree",
 			source:            []string{},
-			shouldNotContains: []string{hello},
+			shouldNotContains: []string{"hello"},
 		},
 		{
 			name:              "delete non-existent word",
-			source:            []string{hello, world},
+			source:            []string{"hello", "world"},
 			shouldNotContains: []string{"nonexistent"},
 		},
 		{
 			name:              "delete all words",
-			source:            []string{hello, world},
-			shouldNotContains: []string{hello, world},
+			source:            []string{"hello", "world"},
+			shouldNotContains: []string{"hello", "world"},
 		},
 		{
 			name:              "delete words with shared prefixes",
@@ -53,7 +53,7 @@ func TestDeleteWord(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			var tree radixtree.MapRadixTree
+			var tree radixmap.MapRadixTree
 
 			for _, e := range test.source {
 				tree.Add(e)

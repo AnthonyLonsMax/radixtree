@@ -1,4 +1,4 @@
-package radixtree
+package radixmap
 
 // LongestPrefixOf returns the longest key that is a prefix of the given word.
 func (r *MapRadixTree) LongestPrefixOf(word string) string {

@@ -1,4 +1,4 @@
-package radixtree
+package radixmap
 
 // Maximum returns the lexicographically largest word in the tree.
 // Returns empty string if the tree is empty.

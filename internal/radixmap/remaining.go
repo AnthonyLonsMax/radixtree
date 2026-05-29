@@ -1,4 +1,4 @@
-package radixtree
+package radixmap
 
 // Remaining returns all stored words that have the given prefix.
 func (r *MapRadixTree) Remaining(prefix string) []string {
