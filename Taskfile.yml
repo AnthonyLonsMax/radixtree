@@ -1,0 +1,19 @@
+version: '3'
+
+tasks:
+
+  test:
+    desc: Run global test
+    cmd: go test -v -count 1 ./...
+
+  lint:
+    desc: Run linters
+    cmd: golangci-lint run
+
+  coverage:
+    desc: Run tests and generate HTML coverage report
+    cmds:
+      - mkdir -p coverage
+      - go test -coverprofile=coverage/out.out ./...
+      - go tool cover -html=coverage/out.out -o coverage/index.html
+
