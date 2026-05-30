@@ -196,6 +196,7 @@ func (r *RadixOrdered) delete(cursor *edge, word string) (*edge, bool) {
 	var deleted bool
 
 	commonLen := commonPrefixLength(cursor.prefix, word)
+
 	if commonLen == 0 && cursor.prefix == "" {
 		rest := cursor.getChildren(rune(word[0]))
 		if rest == nil {
@@ -216,6 +217,7 @@ func (r *RadixOrdered) delete(cursor *edge, word string) (*edge, bool) {
 			case 1:
 				for _, child := range cursor.childrens {
 					cursor.prefix += child.prefix
+					cursor.prefixes = child.prefixes
 					cursor.childrens = child.childrens
 					cursor.isTerminal = child.isTerminal
 				}
