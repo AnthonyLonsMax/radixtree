@@ -52,6 +52,22 @@ func (e *edge) insertOrdered(char rune, insertEdge *edge) {
 	}
 }
 
+func (e *edge) insert(char rune, insertEdge *edge) {
+	e.prefixes = append(e.prefixes, char)
+	e.childrens = append(e.childrens, insertEdge)
+}
+
+func (e *edge) splitEdge(src *edge, position int) {
+	newNode := new(edge)
+	newNode.childrens = e.childrens
+	newNode.prefixes = e.prefixes
+	newNode.prefix = src.prefix[position:]
+	src.prefix = src.prefix[:position]
+	src.prefixes = make([]rune, 0)
+	src.childrens = make([]*edge, 0)
+	e.insert(rune(newNode.prefix[0]), newNode)
+}
+
 func RadixMap() RadixTree {
 	return new(radixmap.MapRadixTree)
 }
