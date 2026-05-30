@@ -11,6 +11,9 @@ type RadixOrdered struct {
 }
 
 func (r *RadixOrdered) Add(word string) bool {
+	if word == "" {
+		return false
+	}
 	added := false
 	r.root, added = r.add(r.root, word)
 	if added {
@@ -33,6 +36,21 @@ func newEdge(prefix string, isTerminal bool) *edge {
 		prefix:     prefix,
 		isTerminal: isTerminal,
 	}
+}
+
+func commonPrefixLength(word1, word2 string) int {
+	minLength := min(len(word1), len(word2))
+	count := 0
+
+	for i := range minLength {
+		if word1[i] == word2[i] {
+			count++
+		} else {
+			break
+		}
+	}
+
+	return count
 }
 
 func (e *edge) getChildren(char rune) *edge {
@@ -62,6 +80,7 @@ func splitEdge(src *edge, position int) {
 	newNode := new(edge)
 	newNode.childrens = src.childrens
 	newNode.prefixes = src.prefixes
+	newNode.isTerminal = src.isTerminal
 
 	// Split the prefix word
 	newNode.prefix = src.prefix[position:]
@@ -70,25 +89,10 @@ func splitEdge(src *edge, position int) {
 	// Cero the values
 	src.prefixes = make([]rune, 0)
 	src.childrens = make([]*edge, 0)
+	src.isTerminal = false
 
 	// Append the split part
-	src.childrens = append(src.childrens, newNode)
-	src.prefixes = append(src.prefixes, rune(newNode.prefix[0]))
-}
-
-func commonPrefixLength(word1, word2 string) int {
-	minLength := min(len(word1), len(word2))
-	count := 0
-
-	for i := range minLength {
-		if word1[i] == word2[i] {
-			count++
-		} else {
-			break
-		}
-	}
-
-	return count
+	src.insertOrdered(rune(newNode.prefix[0]), newNode)
 }
 
 func (r *RadixOrdered) add(cursor *edge, word string) (*edge, bool) {
@@ -98,17 +102,23 @@ func (r *RadixOrdered) add(cursor *edge, word string) (*edge, bool) {
 
 	commonLen := commonPrefixLength(cursor.prefix, word)
 
-	var added bool
-
 	minLength := min(len(cursor.prefix), len(word))
+
+	var added bool
 
 	switch {
 	case commonLen == 0:
 		if cursor.prefix != "" {
 			splitEdge(cursor, commonLen)
 		}
-		cursor.insertOrdered(rune(word[0]), newEdge(word, true))
-		return cursor, true
+		rest := cursor.getChildren(rune(word[commonLen]))
+		if rest == nil {
+			newNode := newEdge(word[commonLen:], true)
+			cursor.insertOrdered(rune(newNode.prefix[0]), newNode)
+			return cursor, true
+		}
+		rest, added = r.add(rest, word[commonLen:])
+		return cursor, added
 
 	case commonLen == len(cursor.prefix) && commonLen == len(word):
 		cursor.isTerminal = true
@@ -121,7 +131,8 @@ func (r *RadixOrdered) add(cursor *edge, word string) (*edge, bool) {
 			cursor.insertOrdered(rune(newNode.prefix[0]), newNode)
 			return cursor, true
 		}
-		return r.add(rest, word[commonLen:])
+		rest, added = r.add(rest, word[commonLen:])
+		return cursor, added
 
 	case commonLen == len(word) && commonLen < len(cursor.prefix):
 		if cursor.prefix != "" {
@@ -140,21 +151,28 @@ func (r *RadixOrdered) add(cursor *edge, word string) (*edge, bool) {
 			cursor.insertOrdered(rune(newNode.prefix[0]), newNode)
 			return cursor, true
 		}
-		return r.add(rest, word[commonLen:])
+		rest, added = r.add(rest, word[commonLen:])
+		return cursor, added
 	}
 
-	//if !cursor.isTerminal && len(cursor.childrens) == 1 {
-	//	for _, child := range cursor.childrens {
-	//		cursor.prefix += child.prefix
-	//		cursor.childrens = child.childrens
-	//		cursor.isTerminal = child.isTerminal
-	//	}
-	//}
+	return cursor, false
+}
 
-	return cursor, added
+// TODO: Need to add check merge
+func checkMerge(cursor *edge) {
+	if !cursor.isTerminal && len(cursor.childrens) == 1 {
+		for _, child := range cursor.childrens {
+			cursor.prefix += child.prefix
+			cursor.childrens = child.childrens
+			cursor.isTerminal = child.isTerminal
+		}
+	}
 }
 
 func (r *RadixOrdered) Contains(word string) bool {
+	if word == "" {
+		return false
+	}
 	return r.contains(r.root, word)
 }
 
