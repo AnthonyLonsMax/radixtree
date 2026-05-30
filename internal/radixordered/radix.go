@@ -6,7 +6,17 @@ import (
 )
 
 type RadixOrdered struct {
-	root *edge
+	root  *edge
+	count int
+}
+
+func (r *RadixOrdered) Add(word string) bool {
+	added := false
+	r.root, added = r.add(r.root, word)
+	if added {
+		r.count++
+	}
+	return added
 }
 
 type edge struct {
@@ -47,11 +57,6 @@ func (e *edge) insertOrdered(char rune, insertEdge *edge) {
 	}
 }
 
-func insert(char rune, e *edge, insertEdge *edge) {
-	e.prefixes = append(e.prefixes, char)
-	e.childrens = append(e.childrens, insertEdge)
-}
-
 func splitEdge(src *edge, position int) {
 	// Create a copy the node data
 	newNode := new(edge)
@@ -66,9 +71,9 @@ func splitEdge(src *edge, position int) {
 	src.prefixes = make([]rune, 0)
 	src.childrens = make([]*edge, 0)
 
-	// Append the new child
+	// Append the split part
 	src.childrens = append(src.childrens, newNode)
-	src.prefixes = append(src.prefixes, rune(newNode.prefix[0])) // WARN: Could be empty
+	src.prefixes = append(src.prefixes, rune(newNode.prefix[0]))
 }
 
 func commonPrefixLength(word1, word2 string) int {
@@ -95,35 +100,87 @@ func (r *RadixOrdered) add(cursor *edge, word string) (*edge, bool) {
 
 	var added bool
 
+	minLength := min(len(cursor.prefix), len(word))
+
 	switch {
 	case commonLen == 0:
-		splitEdge(cursor, commonLen)
+		if cursor.prefix != "" {
+			splitEdge(cursor, commonLen)
+		}
 		cursor.insertOrdered(rune(word[0]), newEdge(word, true))
+		return cursor, true
 
 	case commonLen == len(cursor.prefix) && commonLen == len(word):
-		added = !cursor.isTerminal
 		cursor.isTerminal = true
+		return cursor, true
 
 	case commonLen == len(cursor.prefix) && commonLen < len(word):
-		added = r.addRecurseOrCreate(cursor, word, commonLen)
+		rest := cursor.getChildren(rune(word[commonLen]))
+		if rest == nil {
+			newNode := newEdge(word[commonLen:], true)
+			cursor.insertOrdered(rune(newNode.prefix[0]), newNode)
+			return cursor, true
+		}
+		return r.add(rest, word[commonLen:])
 
 	case commonLen == len(word) && commonLen < len(cursor.prefix):
-		r.nodeSplit(cursor, commonLen)
-		added = true
-
-		cursor.isTerminal = true
-
-	default:
-		splitEdge(cursor, commonLen)
-	}
-
-	if !cursor.isTerminal && len(cursor.childrens) == 1 {
-		for _, child := range cursor.childrens {
-			cursor.prefix += child.prefix
-			cursor.childrens = child.childrens
-			cursor.isTerminal = child.isTerminal
+		if cursor.prefix != "" {
+			splitEdge(cursor, commonLen)
 		}
+		cursor.isTerminal = true
+		return cursor, true
+
+	case 0 < commonLen && commonLen < minLength: // partial cover
+		if cursor.prefix != "" {
+			splitEdge(cursor, commonLen)
+		}
+		rest := cursor.getChildren(rune(word[commonLen]))
+		if rest == nil {
+			newNode := newEdge(word[commonLen:], true)
+			cursor.insertOrdered(rune(newNode.prefix[0]), newNode)
+			return cursor, true
+		}
+		return r.add(rest, word[commonLen:])
 	}
+
+	//if !cursor.isTerminal && len(cursor.childrens) == 1 {
+	//	for _, child := range cursor.childrens {
+	//		cursor.prefix += child.prefix
+	//		cursor.childrens = child.childrens
+	//		cursor.isTerminal = child.isTerminal
+	//	}
+	//}
 
 	return cursor, added
+}
+
+func (r *RadixOrdered) Contains(word string) bool {
+	return r.contains(r.root, word)
+}
+
+func (r *RadixOrdered) contains(cursor *edge, word string) bool {
+	if cursor == nil {
+		return false
+	}
+
+	commonLen := commonPrefixLength(cursor.prefix, word)
+	if commonLen == 0 && cursor.prefix == "" {
+		rest := cursor.getChildren(rune(word[0]))
+		if rest == nil {
+			return false
+		}
+		return r.contains(rest, word)
+	}
+
+	switch {
+	case commonLen == len(word) && commonLen == len(cursor.prefix):
+		return cursor.isTerminal
+	case commonLen == len(cursor.prefix) && commonLen < len(word):
+		rest := cursor.getChildren(rune(word[commonLen]))
+		if rest == nil {
+			return false
+		}
+		return r.contains(rest, word[commonLen:])
+	}
+	return false
 }
