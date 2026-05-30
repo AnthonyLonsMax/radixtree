@@ -102,8 +102,6 @@ func (r *RadixOrdered) add(cursor *edge, word string) (*edge, bool) {
 
 	commonLen := commonPrefixLength(cursor.prefix, word)
 
-	minLength := min(len(cursor.prefix), len(word))
-
 	var added bool
 
 	switch {
@@ -141,31 +139,13 @@ func (r *RadixOrdered) add(cursor *edge, word string) (*edge, bool) {
 		cursor.isTerminal = true
 		return cursor, true
 
-	case 0 < commonLen && commonLen < minLength: // partial cover
+	default: // partial cover
 		if cursor.prefix != "" {
 			splitEdge(cursor, commonLen)
 		}
-		rest := cursor.getChildren(rune(word[commonLen]))
-		if rest == nil {
-			newNode := newEdge(word[commonLen:], true)
-			cursor.insertOrdered(rune(newNode.prefix[0]), newNode)
-			return cursor, true
-		}
-		rest, added = r.add(rest, word[commonLen:])
-		return cursor, added
-	}
-
-	return cursor, false
-}
-
-// TODO: Need to add check merge
-func checkMerge(cursor *edge) {
-	if !cursor.isTerminal && len(cursor.childrens) == 1 {
-		for _, child := range cursor.childrens {
-			cursor.prefix += child.prefix
-			cursor.childrens = child.childrens
-			cursor.isTerminal = child.isTerminal
-		}
+		newNode := newEdge(word[commonLen:], true)
+		cursor.insertOrdered(rune(newNode.prefix[0]), newNode)
+		return cursor, true
 	}
 }
 
@@ -193,12 +173,61 @@ func (r *RadixOrdered) contains(cursor *edge, word string) bool {
 	switch {
 	case commonLen == len(word) && commonLen == len(cursor.prefix):
 		return cursor.isTerminal
-	case commonLen == len(cursor.prefix) && commonLen < len(word):
+	default:
 		rest := cursor.getChildren(rune(word[commonLen]))
-		if rest == nil {
-			return false
-		}
 		return r.contains(rest, word[commonLen:])
 	}
-	return false
+}
+
+func (r *RadixOrdered) Delete(word string) bool {
+	if word == "" {
+		return false
+	}
+	var deleted bool
+	r.root, deleted = r.delete(r.root, word)
+	return deleted
+}
+
+func (r *RadixOrdered) delete(cursor *edge, word string) (*edge, bool) {
+	if cursor == nil {
+		return nil, false
+	}
+
+	var deleted bool
+
+	commonLen := commonPrefixLength(cursor.prefix, word)
+	if commonLen == 0 && cursor.prefix == "" {
+		rest := cursor.getChildren(rune(word[0]))
+		if rest == nil {
+			return cursor, false
+		}
+		rest, deleted = r.delete(rest, word)
+		return cursor, deleted
+	}
+
+	switch {
+	case commonLen == len(word) && commonLen == len(cursor.prefix):
+		if cursor.isTerminal {
+			cursor.isTerminal = false
+			childCount := len(cursor.childrens)
+			switch childCount {
+			case 0:
+				return nil, true
+			case 1:
+				for _, child := range cursor.childrens {
+					cursor.prefix += child.prefix
+					cursor.childrens = child.childrens
+					cursor.isTerminal = child.isTerminal
+				}
+				return cursor, true
+			default:
+				return cursor, true
+			}
+		}
+		return cursor, false
+	default:
+		rest := cursor.getChildren(rune(word[commonLen]))
+		rest, deleted = r.delete(rest, word)
+		return cursor, deleted
+	}
 }
