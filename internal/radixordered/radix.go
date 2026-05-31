@@ -241,3 +241,40 @@ func (r *RadixOrdered) delete(cursor *edge, word string) (*edge, bool) {
 		return cursor, deleted
 	}
 }
+
+func (r *RadixOrdered) StartsWith(word string) bool {
+	if word == "" {
+		return false
+	}
+	return r.startsWith(r.root, word)
+}
+
+func (r *RadixOrdered) startsWith(cursor *edge, word string) bool {
+	if cursor == nil {
+		return false
+	}
+
+	var found bool
+
+	commonLen := commonPrefixLength(cursor.prefix, word)
+
+	// Root checking
+	if commonLen == 0 && cursor.prefix == "" {
+		rest := cursor.getChildren(rune(word[0]))
+		found = r.startsWith(rest, word)
+		return found
+	}
+
+	switch {
+	case commonLen == len(cursor.prefix) && commonLen < len(word):
+		rest := cursor.getChildren(rune(word[commonLen]))
+		found = r.startsWith(rest, word[commonLen:])
+		return found
+
+	case commonLen == len(word) && commonLen == len(cursor.prefix):
+		return true
+
+	default:
+		return found
+	}
+}

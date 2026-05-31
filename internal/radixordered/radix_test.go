@@ -269,3 +269,64 @@ func TestDelete(t *testing.T) {
 	}
 
 }
+
+func TestStartWith(t *testing.T) {
+	type tt struct {
+		name     string
+		sources  []string
+		find     string
+		expected bool
+	}
+	tc := []tt{
+		{
+			name:     "Empty tree",
+			find:     "word",
+			expected: false,
+		},
+		{
+			name:     "Should contains",
+			sources:  []string{"word"},
+			find:     "word",
+			expected: true,
+		},
+		{
+			name:     "No match",
+			sources:  []string{"word", "source", "wordy"},
+			find:     "worda",
+			expected: false,
+		},
+		{
+			name:     "Empty word",
+			find:     "",
+			expected: false,
+		},
+		{
+			name:     "Splitted root",
+			sources:  []string{"word", "match", "human"},
+			find:     "fuzzy",
+			expected: false,
+		},
+		{
+			name:     "Partial prefix divergence",
+			sources:  []string{"hello"},
+			find:     "hey",
+			expected: false,
+		},
+	}
+	for _, test := range tc {
+		t.Run(test.name, func(t *testing.T) {
+			tree := radixordered.RadixOrdered{}
+			for _, src := range test.sources {
+				if !tree.Add(src) {
+					if src != "" {
+						t.Fatalf("Element %s should be added to the tree", src)
+					}
+				}
+			}
+			if exp := tree.StartsWith(test.find); exp != test.expected {
+				t.Fatalf("Element find %s expect to be %v but got %v", test.find, test.expected, exp)
+			}
+		})
+	}
+
+}
