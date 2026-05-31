@@ -192,6 +192,9 @@ func (r *RadixOrdered) Delete(word string) bool {
 	}
 	var deleted bool
 	r.root, deleted = r.delete(r.root, word)
+	if deleted {
+		r.count--
+	}
 	return deleted
 }
 
@@ -240,6 +243,10 @@ func (r *RadixOrdered) delete(cursor *edge, word string) (*edge, bool) {
 	default:
 		return cursor, deleted
 	}
+}
+
+func (r *RadixOrdered) Size() int {
+	return r.count
 }
 
 func (r *RadixOrdered) StartsWith(word string) bool {

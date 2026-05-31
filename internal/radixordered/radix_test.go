@@ -407,3 +407,75 @@ func TestStartWith(t *testing.T) {
 	}
 
 }
+
+func TestSize(t *testing.T) {
+	type tt struct {
+		name          string
+		source        []string
+		wordsToDelete []string
+	}
+	tc := []tt{
+		{
+			name: "delete subset of words with common prefixes",
+			source: []string{
+				"worderland", "word", "worddy", "work", "worry",
+				"wor", "worries", "wallet", "love", "lonnly",
+				"lovers", "anthony", "ony", "anth",
+			},
+			wordsToDelete: []string{
+				"anthony", "ony", "anth",
+			},
+		},
+		{
+			name:          "empty tree",
+			source:        []string{},
+			wordsToDelete: []string{},
+		},
+		{
+			name:          "single word no deletion",
+			source:        []string{"a"},
+			wordsToDelete: []string{},
+		},
+		{
+			name:          "delete some words",
+			source:        []string{"a", "b", "c"},
+			wordsToDelete: []string{"a", "b"},
+		},
+		{
+			name:          "delete non-existent word",
+			source:        []string{"hello", "world"},
+			wordsToDelete: []string{"nonexistent"},
+		},
+		{
+			name:          "unicode size",
+			source:        []string{"café", "résumé", "你好", "😀emoji"},
+			wordsToDelete: []string{"résumé", "😀emoji"},
+		},
+	}
+
+	for _, test := range tc {
+		t.Run(test.name, func(t *testing.T) {
+			tree := radixordered.RadixOrdered{}
+
+			addedCount := 0
+			for _, e := range test.source {
+				if tree.Add(e) {
+					addedCount++
+				}
+			}
+
+			deleteCount := 0
+			for _, e := range test.wordsToDelete {
+				if tree.Contains(e) {
+					deleteCount++
+				}
+				tree.Delete(e)
+			}
+
+			expected := addedCount - deleteCount
+			if expected != tree.Size() {
+				t.Fatalf("Expected size %d got %d", expected, tree.Size())
+			}
+		})
+	}
+}
