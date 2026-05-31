@@ -120,7 +120,7 @@ func (r *RadixOrdered) add(cursor *edge, word string) (*edge, bool) {
 
 	case commonLen == len(cursor.prefix) && commonLen == len(word):
 		cursor.isTerminal = true
-		return cursor, true
+		return cursor, false
 
 	case commonLen == len(cursor.prefix) && commonLen < len(word):
 		rest := cursor.getChildren(rune(word[commonLen]))
