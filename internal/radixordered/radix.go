@@ -161,28 +161,28 @@ func (r *RadixOrdered) contains(cursor *edge, word string) bool {
 		return false
 	}
 
-	var deleted bool
+	var found bool
 
 	commonLen := commonPrefixLength(cursor.prefix, word)
 
 	// Root checking
 	if commonLen == 0 && cursor.prefix == "" {
 		rest := cursor.getChildren(rune(word[0]))
-		rest, deleted = r.delete(rest, word)
-		return deleted
+		found = r.contains(rest, word)
+		return found
 	}
 
 	switch {
+	case commonLen == len(cursor.prefix) && commonLen < len(word): // partial match
+		rest := cursor.getChildren(rune(word[commonLen]))
+		found = r.contains(rest, word[commonLen:])
+		return found
+
 	case commonLen == len(word) && commonLen == len(cursor.prefix):
 		return cursor.isTerminal
 
-	case commonLen == len(cursor.prefix) && commonLen < len(word): // partial match
-		rest := cursor.getChildren(rune(word[commonLen]))
-		rest, deleted = r.delete(rest, word[commonLen:])
-		return deleted
-
 	default:
-		return deleted
+		return found
 	}
 }
 

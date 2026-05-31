@@ -115,6 +115,12 @@ func TestContainsWithExpected(t *testing.T) {
 			expected: true,
 		},
 		{
+			name:     "No match",
+			sources:  []string{"word", "source", "wordy"},
+			find:     "worda",
+			expected: false,
+		},
+		{
 			name:     "Empty word",
 			find:     "",
 			expected: false,
@@ -123,6 +129,12 @@ func TestContainsWithExpected(t *testing.T) {
 			name:     "Splitted root",
 			sources:  []string{"word", "match", "human"},
 			find:     "fuzzy",
+			expected: false,
+		},
+		{
+			name:     "Partial prefix divergence",
+			sources:  []string{"hello"},
+			find:     "hey",
 			expected: false,
 		},
 	}
@@ -212,6 +224,24 @@ func TestDelete(t *testing.T) {
 			},
 			deleteItems: []string{
 				"worderland",
+			},
+		},
+		{
+			name: "Delete terminal with multiple children",
+			sources: []string{
+				"test", "testing", "tested",
+			},
+			deleteItems: []string{
+				"test",
+			},
+		},
+		{
+			name: "Delete already removed word from prefix node",
+			sources: []string{
+				"test", "testing", "tested",
+			},
+			deleteItems: []string{
+				"test", "test",
 			},
 		},
 	}
