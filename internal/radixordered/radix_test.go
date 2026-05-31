@@ -26,6 +26,15 @@ func TestAddFunction(t *testing.T) {
 				"",
 			},
 		},
+		{
+			name: "Unicode words",
+			sources: []string{
+				"café", "résumé", "jalapeño", "naïve",
+				"cœur", "über", "façade",
+				"你好", "世界",
+				"😀emoji",
+			},
+		},
 	}
 	for _, test := range tc {
 		t.Run(test.name, func(t *testing.T) {
@@ -72,6 +81,24 @@ func TestContains(t *testing.T) {
 			shouldContains: []string{
 				"worderland", "word", "worddy", "work", "worry",
 			},
+		},
+		{
+			name: "Unicode words",
+			sources: []string{
+				"café", "résumé", "jalapeño",
+				"你好", "世界",
+				"😀emoji", "🌍🌎🌏",
+			},
+			shouldContains: []string{
+				"café", "résumé", "jalapeño",
+				"你好", "世界",
+				"😀emoji", "🌍🌎🌏",
+			},
+		},
+		{
+			name: "Unicode prefix sharing",
+			sources: []string{"é", "ë"},
+			shouldContains: []string{"é", "ë"},
 		},
 	}
 	for _, test := range tc {
@@ -135,6 +162,24 @@ func TestContainsWithExpected(t *testing.T) {
 			name:     "Partial prefix divergence",
 			sources:  []string{"hello"},
 			find:     "hey",
+			expected: false,
+		},
+		{
+			name:     "Unicode contains",
+			sources:  []string{"café", "résumé"},
+			find:     "café",
+			expected: true,
+		},
+		{
+			name:     "Unicode no match",
+			sources:  []string{"café"},
+			find:     "caféa",
+			expected: false,
+		},
+		{
+			name:     "Unicode partial prefix divergence",
+			sources:  []string{"naïve"},
+			find:     "naiv",
 			expected: false,
 		},
 	}
@@ -244,6 +289,20 @@ func TestDelete(t *testing.T) {
 				"test", "test",
 			},
 		},
+		{
+			name: "Unicode delete",
+			sources: []string{
+				"café", "cafeteria", "cafetal",
+			},
+			deleteItems: []string{
+				"café",
+			},
+		},
+		{
+			name: "Unicode prefix sharing delete",
+			sources: []string{"é", "ë"},
+			deleteItems: []string{"é"},
+		},
 	}
 	for _, test := range tc {
 		t.Run(test.name, func(t *testing.T) {
@@ -311,6 +370,24 @@ func TestStartWith(t *testing.T) {
 			sources:  []string{"hello"},
 			find:     "hey",
 			expected: false,
+		},
+		{
+			name:     "Unicode starts with",
+			sources:  []string{"café", "cafeteria", "cafetal"},
+			find:     "café",
+			expected: true,
+		},
+		{
+			name:     "Unicode no starts with",
+			sources:  []string{"café"},
+			find:     "caféa",
+			expected: false,
+		},
+		{
+			name:     "Unicode prefix sharing starts with",
+			sources:  []string{"é", "ë"},
+			find:     "é",
+			expected: true,
 		},
 	}
 	for _, test := range tc {
