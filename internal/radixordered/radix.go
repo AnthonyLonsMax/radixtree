@@ -168,9 +168,6 @@ func (r *RadixOrdered) contains(cursor *edge, word string) bool {
 	// Root checking
 	if commonLen == 0 && cursor.prefix == "" {
 		rest := cursor.getChildren(rune(word[0]))
-		if rest == nil {
-			return false
-		}
 		rest, deleted = r.delete(rest, word)
 		return deleted
 	}
@@ -215,9 +212,6 @@ func (r *RadixOrdered) delete(cursor *edge, word string) (*edge, bool) {
 	}
 
 	switch {
-	case commonLen == 0:
-		return cursor, deleted
-
 	case commonLen == len(cursor.prefix) && commonLen < len(word): // partial match
 		rest := cursor.getChildren(rune(word[commonLen]))
 		rest, deleted = r.delete(rest, word[commonLen:])

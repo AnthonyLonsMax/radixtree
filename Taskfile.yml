@@ -14,6 +14,6 @@ tasks:
     desc: Run tests and generate HTML coverage report
     cmds:
       - mkdir -p coverage
-      - go test -coverprofile=coverage/out.out ./...
+      - go test -count 1 -coverprofile=coverage/out.out ./...
       - go tool cover -html=coverage/out.out -o coverage/index.html
 

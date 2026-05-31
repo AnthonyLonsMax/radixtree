@@ -109,6 +109,12 @@ func TestContainsWithExpected(t *testing.T) {
 			expected: false,
 		},
 		{
+			name:     "Should contains",
+			sources:  []string{"word"},
+			find:     "word",
+			expected: true,
+		},
+		{
 			name:     "Empty word",
 			find:     "",
 			expected: false,
