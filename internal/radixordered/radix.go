@@ -161,21 +161,31 @@ func (r *RadixOrdered) contains(cursor *edge, word string) bool {
 		return false
 	}
 
+	var deleted bool
+
 	commonLen := commonPrefixLength(cursor.prefix, word)
+
+	// Root checking
 	if commonLen == 0 && cursor.prefix == "" {
 		rest := cursor.getChildren(rune(word[0]))
 		if rest == nil {
 			return false
 		}
-		return r.contains(rest, word)
+		rest, deleted = r.delete(rest, word)
+		return deleted
 	}
 
 	switch {
 	case commonLen == len(word) && commonLen == len(cursor.prefix):
 		return cursor.isTerminal
-	default:
+
+	case commonLen == len(cursor.prefix) && commonLen < len(word): // partial match
 		rest := cursor.getChildren(rune(word[commonLen]))
-		return r.contains(rest, word[commonLen:])
+		rest, deleted = r.delete(rest, word[commonLen:])
+		return deleted
+
+	default:
+		return deleted
 	}
 }
 
@@ -197,16 +207,22 @@ func (r *RadixOrdered) delete(cursor *edge, word string) (*edge, bool) {
 
 	commonLen := commonPrefixLength(cursor.prefix, word)
 
+	// Root checking
 	if commonLen == 0 && cursor.prefix == "" {
 		rest := cursor.getChildren(rune(word[0]))
-		if rest == nil {
-			return cursor, false
-		}
 		rest, deleted = r.delete(rest, word)
 		return cursor, deleted
 	}
 
 	switch {
+	case commonLen == 0:
+		return cursor, deleted
+
+	case commonLen == len(cursor.prefix) && commonLen < len(word): // partial match
+		rest := cursor.getChildren(rune(word[commonLen]))
+		rest, deleted = r.delete(rest, word[commonLen:])
+		return cursor, deleted
+
 	case commonLen == len(word) && commonLen == len(cursor.prefix):
 		if cursor.isTerminal {
 			cursor.isTerminal = false
@@ -228,8 +244,6 @@ func (r *RadixOrdered) delete(cursor *edge, word string) (*edge, bool) {
 		}
 		return cursor, false
 	default:
-		rest := cursor.getChildren(rune(word[commonLen]))
-		rest, deleted = r.delete(rest, word)
 		return cursor, deleted
 	}
 }

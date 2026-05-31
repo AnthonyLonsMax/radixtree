@@ -156,6 +156,58 @@ func TestDelete(t *testing.T) {
 				"lovers", "anthony", "ony", "anth",
 			},
 		},
+		{
+			name:    "Empty tree",
+			sources: []string{},
+			deleteItems: []string{
+				"lovers", "anthony", "ony", "anth",
+			},
+		},
+		{
+			name: "Partial match",
+			sources: []string{
+				"worderland", "word", "worddy", "work", "worry",
+			},
+			deleteItems: []string{
+				"work", "worry",
+			},
+		},
+		{
+			name: "Diferent words",
+			sources: []string{
+				"worderland", "human", "root",
+			},
+			deleteItems: []string{
+				"work", "factory",
+			},
+		},
+		{
+			name: "Common length 0",
+			sources: []string{
+				"word", "work",
+			},
+			deleteItems: []string{
+				"worddy",
+			},
+		},
+		{
+			name: "Delete empty word",
+			sources: []string{
+				"worderland", "human", "root",
+			},
+			deleteItems: []string{
+				"",
+			},
+		},
+		{
+			name: "Exact match",
+			sources: []string{
+				"worderland",
+			},
+			deleteItems: []string{
+				"worderland",
+			},
+		},
 	}
 	for _, test := range tc {
 		t.Run(test.name, func(t *testing.T) {
